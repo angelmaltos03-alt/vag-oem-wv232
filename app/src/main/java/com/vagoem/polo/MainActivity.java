@@ -12,12 +12,43 @@ import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Toast;
 import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class MainActivity extends Activity {
  private static final String PREFS="vag_oem_targets"; private SharedPreferences prefs; private VagUiView ui;
- @Override public void onCreate(Bundle state){super.onCreate(state);prefs=getSharedPreferences(PREFS,MODE_PRIVATE);hideSystemBars();ui=new VagUiView(this,this::handleAction);setContentView(ui);}
+ @Override public void onCreate(Bundle state){super.onCreate(state);prefs=getSharedPreferences(PREFS,MODE_PRIVATE);hideSystemBars();ui=new VagUiView(this,this::handleAction);setContentView(ui);showPendingCrashReport();}
  @Override protected void onResume(){super.onResume();hideSystemBars();refreshGpsUi();}
- private void refreshGpsUi(){if(ui!=null){ui.setGpsSnapshot(GpsTelemetryEngine.read(this,null));}}
+
+ private void showPendingCrashReport(){
+  if(prefs.getBoolean("crash_report_prompted",false))return;
+  if(!(getApplication() instanceof VagOemApp))return;
+  File report=((VagOemApp)getApplication()).getLastCrashReport();
+  if(report==null)return;
+  prefs.edit().putBoolean("crash_report_prompted",true).apply();
+  new AlertDialog.Builder(this).setTitle("Diagnóstico de VAG OEM")
+   .setMessage("Se detectó un cierre inesperado en una ejecución anterior. Puedes compartir el informe para identificar el problema. No contiene contraseñas ni datos CANBUS.")
+   .setPositiveButton("Compartir informe",(dialog,which)->shareCrashReport(report))
+   .setNegativeButton("Ahora no",null).show();
+ }
+ private void shareCrashReport(File report){
+  try{
+   ByteArrayOutputStream buffer=new ByteArrayOutputStream();
+   try(FileInputStream input=new FileInputStream(report)){
+    byte[] data=new byte[4096];int count;
+    while((count=input.read(data))!=-1)buffer.write(data,0,count);
+   }
+   Intent send=new Intent(Intent.ACTION_SEND);
+   send.setType("text/plain");
+   send.putExtra(Intent.EXTRA_SUBJECT,"VAG OEM WV232 - informe de diagnóstico");
+   send.putExtra(Intent.EXTRA_TEXT,buffer.toString("UTF-8"));
+   startActivity(Intent.createChooser(send,"Enviar informe de diagnóstico"));
+  }catch(Exception error){
+   Toast.makeText(this,"No se pudo abrir el informe: "+error.getMessage(),Toast.LENGTH_LONG).show();
+  }
+ }
+\n private void refreshGpsUi(){if(ui!=null){ui.setGpsSnapshot(GpsTelemetryEngine.read(this,null));}}
  private void showGpsDiagnostics(){
   GpsTelemetryEngine.Snapshot g=GpsTelemetryEngine.read(this,null);
   String coord=Double.isFinite(g.latitude)?String.format(Locale.US,"%.6f, %.6f",g.latitude,g.longitude):"Sin posición guardada";
