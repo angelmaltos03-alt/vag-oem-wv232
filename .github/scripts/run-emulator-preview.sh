@@ -54,7 +54,8 @@ tap_home
 adb shell input tap 150 352
 sleep 2
 capture 05-navigation-entry
-tap_home
+adb shell input keyevent 4
+sleep 1
 adb shell input tap 150 456
 sleep 2
 capture 06-settings
