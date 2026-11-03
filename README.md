@@ -1,6 +1,6 @@
 # VAG OEM · Volkswagen Polo 2020 · WV232 / 9070
 
-Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.13.0**.
+Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.13.1**.
 
 ## Vista previa de la interfaz
 
@@ -61,7 +61,7 @@ También se identificaron como posibles mejoras futuras la tarjeta multimedia co
 ## Una sola APK y datos offline
 
 ### Motor de rutas regional
-La APK integrada 0.13.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
+La APK integrada 0.13.1 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`; el flujo de CI renombra el TAR generado al nombre que consume `OfflineRoutingEngine`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
 
 El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 1. Descarga el extracto OSM de México desde Geofabrik.
@@ -70,17 +70,17 @@ El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 4. Publica el TAR de red vial.
 5. Descarga ese TAR en el job Android y lo integra en la APK final.
 
-El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.13.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
+El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.13.1-LAGUNA-OFFLINE-APK`. El flujo debe terminar correctamente antes de instalar la APK integrada.
 
 ### Mapas visuales
 MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Dark oscuro de OpenFreeMap, con edificios extruidos en 3D cuando hay alturas disponibles, jerarquía vial, etiquetas y puntos de interés. La interfaz incluye cabecera OEM, rail lateral, buscador, panel de maniobra, controles flotantes y resumen de ruta. El administrador ofrece regiones compatibles con Dark. El cambio de estilo requiere volver a descargar las regiones visuales guardadas con Bright. El administrador ofrece:
 - Durango estatal (vista general).
 - Coahuila estatal (vista general).
-- La Laguna (detalle urbano).
+- La Laguna (vista general).\n- Torreón, Gómez Palacio y Lerdo como tres paquetes urbanos independientes (zoom 9–16), para descargar y conservar por separado.\n- La descarga de cada ciudad se mantiene dentro de los límites publicados por OpenFreeMap; si un paquete supera 3,000 teselas o 50 MB, se detiene y debe ajustarse su extensión o nivel de zoom.
 - Durango capital (detalle urbano).
 - Saltillo (detalle urbano).
 
-Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.13.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
+Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.13.1**; se descargan por ciudad para mantener una instalación manejable y permitir actualizaciones. La APK integrada sí incorpora el grafo vial regional de Valhalla. El motor de rutas sí se integra en la APK final del flujo de datos.
 
 OpenFreeMap permite descargas offline de hasta 3,000 teselas o 50 MB por descarga, con un máximo de cuatro solicitudes paralelas y User-Agent identificable. VAG OEM configura User-Agent propio, cuatro solicitudes simultáneas y elimina paquetes que superan el límite. <https://openfreemap.org/tos/>
 
@@ -93,7 +93,7 @@ Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico
 
 ## Navegación
 
-VAG Navigation 0.13.0 adopta un cockpit automotriz nocturno inspirado en navegadores 3D: cartografía OpenFreeMap Dark, cámara inclinada, edificios vectoriales extruidos, seguimiento GPS con orientación por rumbo, ruta roja Volkswagen, buscador flotante, tarjeta de maniobra, controles laterales y resumen inferior del recorrido.
+VAG Navigation 0.13.1 adopta un cockpit automotriz nocturno inspirado en navegadores 3D: cartografía OpenFreeMap Dark, cámara inclinada, edificios vectoriales extruidos, seguimiento GPS con orientación por rumbo, ruta roja Volkswagen, buscador flotante, tarjeta de maniobra, controles laterales y resumen inferior del recorrido.
 
 ### Cartografía y perspectiva
 - MapLibre Native 13.6.1 con estilo **Dark** de OpenFreeMap para una base nocturna de alto contraste.
