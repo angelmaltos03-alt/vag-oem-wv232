@@ -358,87 +358,47 @@ public class NavigationActivity extends Activity {
  private void rebuildBottomSheet(){
   if(bottomSheet==null)return;
   bottomSheet.removeAllViews();
-
-  View handle=new View(this);
-  handle.setBackground(rounded(0xFF718091,0,4));
-  LinearLayout.LayoutParams handleLp=new LinearLayout.LayoutParams(dp(38),dp(4));
-  handleLp.gravity=Gravity.CENTER_HORIZONTAL;
-  handleLp.bottomMargin=dp(8);
-  bottomSheet.addView(handle,handleLp);
-
-  LinearLayout heading=new LinearLayout(this);
-  heading.setOrientation(LinearLayout.HORIZONTAL);
-  heading.setGravity(Gravity.CENTER_VERTICAL);
-  TextView title=label(destination==null?"EXPLORA LA LAGUNA":(routeSummary.isEmpty()?"DESTINO SELECCIONADO":"VISTA PREVIA DE RUTA"),10,0xFFE7ECF1,true);
-  heading.addView(title,new LinearLayout.LayoutParams(0,dp(21),1));
-  TextView badge=label(routeSummary.isEmpty()?"MAPA · OPENFREEMAP":"VALHALLA · OFFLINE",8,0xFFFF8794,true);
-  badge.setGravity(Gravity.CENTER);
-  badge.setPadding(dp(9),0,dp(9),0);
-  badge.setBackground(rounded(0xFF321B23,0xFF76404D,12));
-  heading.addView(badge,new LinearLayout.LayoutParams(-2,dp(22)));
-  bottomSheet.addView(heading);
-
+  LinearLayout heading=new LinearLayout(this);heading.setOrientation(LinearLayout.HORIZONTAL);heading.setGravity(Gravity.CENTER_VERTICAL);
+  TextView title=label(routeSummary.isEmpty()?(destination==null?"VAG NAVIGATION":"DESTINO SELECCIONADO"):"RESUMEN DEL RECORRIDO",9,0xFFE7ECF1,true);
+  heading.addView(title,new LinearLayout.LayoutParams(0,dp(18),1));
+  TextView badge=label(routeSummary.isEmpty()?"GPS · MAPA 3D":"VALHALLA · RUTA LOCAL",8,0xFFFF8794,true);badge.setGravity(Gravity.CENTER);
+  badge.setPadding(dp(8),0,dp(8),0);badge.setBackground(rounded(0xFF321B23,0xFF76404D,12));heading.addView(badge,new LinearLayout.LayoutParams(-2,dp(21)));bottomSheet.addView(heading);
   if(routeSummary.isEmpty()){
-   String titleText=destination==null?"¿A dónde vamos?":destinationLabel;
-   TextView destinationText=label(titleText,17,WHITE,true);
-   destinationText.setSingleLine(true);
-   destinationText.setEllipsize(android.text.TextUtils.TruncateAt.END);
-   LinearLayout.LayoutParams destLp=new LinearLayout.LayoutParams(-1,dp(27));
-   destLp.topMargin=dp(2);
-   bottomSheet.addView(destinationText,destLp);
-
-   String hint=destination==null
-     ?"Busca una dirección arriba o introduce coordenadas GPS."
-     :"Destino marcado. Calcula una ruta local cuando el paquete vial esté instalado.";
-   TextView desc=label(hint,9,MUTED,false);
-   desc.setSingleLine(true);
-   desc.setEllipsize(android.text.TextUtils.TruncateAt.END);
-   bottomSheet.addView(desc,new LinearLayout.LayoutParams(-1,dp(19)));
+   TextView destinationText=label(destination==null?"¿A dónde vamos?":destinationLabel,17,WHITE,true);destinationText.setSingleLine(true);destinationText.setEllipsize(android.text.TextUtils.TruncateAt.END);
+   LinearLayout.LayoutParams destLp=new LinearLayout.LayoutParams(-1,dp(27));destLp.topMargin=dp(3);bottomSheet.addView(destinationText,destLp);
+   TextView desc=label(destination==null?"Busca un lugar o toca el mapa para marcarlo.":"Destino marcado. Calcula la ruta con el motor local.",9,MUTED,false);desc.setSingleLine(true);desc.setEllipsize(android.text.TextUtils.TruncateAt.END);bottomSheet.addView(desc,new LinearLayout.LayoutParams(-1,dp(18)));
   }else{
-   LinearLayout metrics=new LinearLayout(this);
-   metrics.setOrientation(LinearLayout.HORIZONTAL);
-   metrics.setGravity(Gravity.CENTER_VERTICAL);
-   View distance=metricBox(routeDistance,"DISTANCIA");
-   metrics.addView(distance,new LinearLayout.LayoutParams(0,dp(47),1));
-   View divider=new View(this);divider.setBackgroundColor(0x553D4855);
-   metrics.addView(divider,new LinearLayout.LayoutParams(dp(1),dp(30)));
-   View duration=metricBox(routeDuration,"TIEMPO ESTIMADO");
-   metrics.addView(duration,new LinearLayout.LayoutParams(0,dp(47),1));
-   bottomSheet.addView(metrics);
-   if(!nextInstruction.isEmpty()){
-    TextView instruction=label("↗  "+nextInstruction,10,0xFFD7DEE8,true);
-    instruction.setSingleLine(true);
-    instruction.setEllipsize(android.text.TextUtils.TruncateAt.END);
-    bottomSheet.addView(instruction,new LinearLayout.LayoutParams(-1,dp(23)));
-   }
+   LinearLayout metrics=new LinearLayout(this);metrics.setOrientation(LinearLayout.HORIZONTAL);metrics.setGravity(Gravity.CENTER_VERTICAL);
+   addTripMetric(metrics,routeDistance,"DISTANCIA");addTripDivider(metrics);addTripMetric(metrics,routeDuration,"TIEMPO");addTripDivider(metrics);addTripMetric(metrics,arrivalTime(),"LLEGADA");
+   LinearLayout.LayoutParams metricsLp=new LinearLayout.LayoutParams(-1,dp(54));metricsLp.topMargin=dp(4);bottomSheet.addView(metrics,metricsLp);
+   View track=new View(this);track.setBackground(rounded(RED,0,4));LinearLayout.LayoutParams trackLp=new LinearLayout.LayoutParams(-1,dp(4));trackLp.topMargin=dp(5);bottomSheet.addView(track,trackLp);
   }
-
-  LinearLayout actions=new LinearLayout(this);
-  actions.setOrientation(LinearLayout.HORIZONTAL);
-  actions.setGravity(Gravity.CENTER_VERTICAL);
-  LinearLayout.LayoutParams actionsLp=new LinearLayout.LayoutParams(-1,dp(42));
-  actionsLp.topMargin=dp(7);
-
-  addWeighted(actions,action("MAPAS OFFLINE",false,()->startActivity(new Intent(this,OfflineMapsActivity.class))),1,42,3);
-  addWeighted(actions,action("REPORTAR",false,this::reportAlert),1,42,3);
-  addWeighted(actions,action("ALERTAS",false,this::showAlerts),1,42,3);
-
-  if(routeSummary.isEmpty()){
-   TextView route=action(destination==null?"BUSCAR DESTINO":"CALCULAR RUTA",true,this::routeToDestination);
-   if(destination==null)route.setAlpha(0.72f);
-   addWeighted(actions,route,1,42,3);
-  }else{
-   addWeighted(actions,action("NUEVA RUTA",true,this::clearDestination),1,42,3);
-  }
-  bottomSheet.addView(actions,actionsLp);
-
-  TextView attribution=label("© OpenStreetMap contributors  ·  OpenFreeMap",8,0xFF8996A5,false);
-  attribution.setGravity(Gravity.CENTER);
-  LinearLayout.LayoutParams attrLp=new LinearLayout.LayoutParams(-1,dp(15));
-  attrLp.topMargin=dp(3);
-  bottomSheet.addView(attribution,attrLp);
+  LinearLayout actions=new LinearLayout(this);actions.setOrientation(LinearLayout.HORIZONTAL);actions.setGravity(Gravity.CENTER_VERTICAL);
+  addWeighted(actions,action("MAPAS",false,()->startActivity(new Intent(this,OfflineMapsActivity.class))),1,32,3);
+  addWeighted(actions,action("REPORTAR",false,this::reportAlert),1,32,3);
+  addWeighted(actions,action("ALERTAS",false,this::showAlerts),1,32,3);
+  addWeighted(actions,action(routeSummary.isEmpty()?"CALCULAR RUTA":"NUEVA RUTA",true,routeSummary.isEmpty()?this::routeToDestination:this::clearDestination),1,32,3);
+  LinearLayout.LayoutParams actionsLp=new LinearLayout.LayoutParams(-1,dp(32));actionsLp.topMargin=dp(7);bottomSheet.addView(actions,actionsLp);
+  TextView attribution=label("© OpenFreeMap · OpenMapTiles · OpenStreetMap",7,0xFF8996A5,false);attribution.setGravity(Gravity.CENTER);
+  bottomSheet.addView(attribution,new LinearLayout.LayoutParams(-1,dp(12)));
  }
 
+ private String arrivalTime(){
+  java.util.Calendar c=java.util.Calendar.getInstance();c.add(java.util.Calendar.MINUTE,routeMinutes);
+  return new java.text.SimpleDateFormat("HH:mm",Locale.getDefault()).format(c.getTime());
+ }
+
+ private void addTripMetric(LinearLayout row,String value,String caption){
+  LinearLayout box=new LinearLayout(this);box.setOrientation(LinearLayout.VERTICAL);box.setGravity(Gravity.CENTER);
+  TextView number=label(value,17,WHITE,true);number.setGravity(Gravity.CENTER);number.setSingleLine(true);
+  TextView sub=label(caption,7,MUTED,true);sub.setGravity(Gravity.CENTER);
+  box.addView(number,new LinearLayout.LayoutParams(-1,dp(31)));box.addView(sub,new LinearLayout.LayoutParams(-1,dp(15)));
+  row.addView(box,new LinearLayout.LayoutParams(0,dp(48),1));
+ }
+
+ private void addTripDivider(LinearLayout row){
+  View divider=new View(this);divider.setBackgroundColor(0x66505D6C);row.addView(divider,new LinearLayout.LayoutParams(dp(1),dp(32)));
+ }
  private View metricBox(String value,String caption){
   LinearLayout wrap=new LinearLayout(this);
   wrap.setOrientation(LinearLayout.VERTICAL);
