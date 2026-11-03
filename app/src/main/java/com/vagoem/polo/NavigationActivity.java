@@ -374,7 +374,7 @@ public class NavigationActivity extends Activity {
    LinearLayout metrics=new LinearLayout(this);metrics.setOrientation(LinearLayout.HORIZONTAL);metrics.setGravity(Gravity.CENTER_VERTICAL);
    addTripMetric(metrics,routeDistance,"DISTANCIA");addTripDivider(metrics);addTripMetric(metrics,routeDuration,"TIEMPO");addTripDivider(metrics);addTripMetric(metrics,arrivalTime(),"LLEGADA");
    LinearLayout.LayoutParams metricsLp=new LinearLayout.LayoutParams(-1,dp(54));metricsLp.topMargin=dp(4);bottomSheet.addView(metrics,metricsLp);
-   View track=new View(this);track.setBackground(rounded(RED,0,4));LinearLayout.LayoutParams trackLp=new LinearLayout.LayoutParams(-1,dp(4));trackLp.topMargin=dp(5);bottomSheet.addView(track,trackLp);
+
   }
   LinearLayout actions=new LinearLayout(this);actions.setOrientation(LinearLayout.HORIZONTAL);actions.setGravity(Gravity.CENTER_VERTICAL);
   addWeighted(actions,action("MAPAS",false,()->startActivity(new Intent(this,OfflineMapsActivity.class))),1,32,3);
