@@ -89,11 +89,11 @@ sleep 25
 capture 15-navigation-map
 
 echo "== Probando búsqueda y selección de destino =="
-adb shell input tap 480 40
+adb shell input tap 300 95
 sleep 2
 adb shell input text '25.57,-103.495'
 sleep 1
-adb shell input tap 698 40
+adb shell input tap 500 95
 sleep 5
 capture 16-navigation-destination
 
