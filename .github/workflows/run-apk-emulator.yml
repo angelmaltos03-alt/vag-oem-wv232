@@ -1,0 +1,156 @@
+name: Run VAG OEM WV232 on Android Emulator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/run-apk-emulator.yml'
+      - 'app/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-run:
+    name: Build, launch and capture app screens
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Build debug APK
+        run: gradle --no-daemon --stacktrace clean assembleDebug
+
+      - name: Launch APK and capture screens
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            mkdir -p emulator-preview
+            APK="app/build/outputs/apk/debug/app-debug.apk"
+
+            adb shell wm size 1024x600
+            adb shell wm density 160
+            adb install -r "$APK"
+            adb shell am force-stop com.vagoem.polo
+            adb shell am start -n com.vagoem.polo/.MainActivity
+            sleep 7
+
+            capture() {
+              sleep 2
+              adb exec-out screencap -p > "emulator-preview/$1.png"
+            }
+
+            # Launcher and the four top-row tiles
+            capture 00-home
+            adb shell input tap 150 200
+            capture 01-radio
+            adb shell input tap 43 119
+            adb shell input tap 393 200
+            capture 02-media
+            adb shell input tap 43 119
+            adb shell input tap 635 200
+            capture 03-phone
+            adb shell input tap 43 119
+            adb shell input tap 878 200
+            capture 04-app-connect
+
+            # Main lower-row pages
+            adb shell input tap 43 119
+            adb shell input tap 150 376
+            capture 05-navigation-entry
+            adb shell input tap 43 119
+            adb shell input tap 635 376
+            capture 06-settings
+            adb shell input tap 43 119
+            adb shell input tap 878 376
+            capture 07-sound-entry
+
+            # Vehicle dashboard and all four data tabs
+            adb shell input tap 43 119
+            adb shell input tap 393 376
+            capture 08-vehicle-general
+            adb shell input tap 150 160
+            capture 09-vehicle-trip
+            adb shell input tap 630 160
+            capture 10-vehicle-engine
+            adb shell input tap 870 160
+            capture 11-vehicle-states
+
+            # Dedicated Android activities
+            adb shell am start -n com.vagoem.polo/.SoundStudioActivity
+            sleep 5
+            capture 12-sound-studio
+            adb shell am start -n com.vagoem.polo/.AudioLabActivity
+            sleep 5
+            capture 13-audio-lab
+            adb shell am start -n com.vagoem.polo/.OfflineMapsActivity
+            sleep 7
+            capture 14-offline-map-manager
+            adb shell am start -n com.vagoem.polo/.NavigationActivity
+            sleep 25
+            capture 15-navigation-map
+
+            adb logcat -d > emulator-preview/logcat.txt
+            adb shell dumpsys activity activities > emulator-preview/activities.txt
+
+            cat > emulator-preview/index.html <<'HTML'
+            <!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>VAG OEM WV232 · Vista del emulador</title>
+            <style>body{font:16px system-ui;background:#0b111a;color:#eef2f6;margin:24px}h1{color:#ff7383}section{margin:24px 0}img{display:block;width:min(100%,1024px);height:auto;border:1px solid #465362;border-radius:8px}small{color:#aab6c4}</style>
+            <h1>VAG OEM · WV232 / Polo 2020</h1><p>Capturas generadas ejecutando la APK en Android Emulator (API 35, pantalla 1024×600).</p>
+            HTML
+            for f in emulator-preview/*.png; do
+              name="$(basename "$f" .png)"
+              printf '<section><h2>%s</h2><img src="%s" alt="%s"></section>\n' "$name" "$(basename "$f")" "$name" >> emulator-preview/index.html
+            done
+
+            if grep -q "FATAL EXCEPTION" emulator-preview/logcat.txt; then
+              echo "::error::Android reported a fatal exception. See emulator-preview/logcat.txt"
+              exit 1
+            fi
+
+      - name: Upload emulator screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: VAG-OEM-WV232-0.11.0-ANDROID-EMULATOR-PREVIEW
+          path: emulator-preview/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Emulator execution summary
+        if: always()
+        run: |
+          echo "## VAG OEM WV232 · Android Emulator" >> "$GITHUB_STEP_SUMMARY"
+          echo "Se intentó compilar e iniciar la APK en Android Emulator API 35 con resolución lógica 1024×600." >> "$GITHUB_STEP_SUMMARY"
+          echo "Las capturas, el índice HTML y logcat se publican en el artefacto de esta ejecución." >> "$GITHUB_STEP_SUMMARY"
+          echo "La prueba virtual no valida CANBUS, MCU, cámara ni periféricos del estéreo físico." >> "$GITHUB_STEP_SUMMARY"
