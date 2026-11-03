@@ -93,7 +93,7 @@ adb shell input tap 480 40
 sleep 2
 adb shell input text '25.57,-103.495'
 sleep 1
-adb shell input tap 966 40
+adb shell input tap 698 40
 sleep 5
 capture 16-navigation-destination
 
