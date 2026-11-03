@@ -60,7 +60,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: VAG-OEM-WV232-0.11.0-ANDROID-EMULATOR-PREVIEW
+          name: VAG-OEM-WV232-0.12.0-ANDROID-EMULATOR-PREVIEW
           path: emulator-preview/
           if-no-files-found: warn
           retention-days: 14
