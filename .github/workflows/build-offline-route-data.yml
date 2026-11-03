@@ -6,6 +6,10 @@ on:
     paths:
       - 'tools/build-valhalla-region.sh'
       - '.github/workflows/build-offline-route-data.yml'
+      - 'app/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
 jobs:
   build-route-graph:
     runs-on: ubuntu-latest
