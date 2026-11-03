@@ -1,10 +1,10 @@
 # VAG OEM · Volkswagen Polo 2020 · WV232 / 9070
 
-Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.11.0**.
+Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.12.0**.
 
 ## Vista previa de la interfaz
 
-Estas imágenes muestran vistas de referencia de las pantallas principales de VAG OEM, preparadas a partir del diseño y los componentes presentes en el código de la versión 0.11.0. **Son previews de interfaz, no capturas de una ejecución en el estéreo ni del emulador.** La validación visual en Android Emulator y en el WV232 físico se documentará por separado cuando sus pruebas terminen.
+Estas imágenes muestran vistas de referencia de las pantallas principales de VAG OEM, preparadas a partir del diseño y los componentes presentes en el código de la versión 0.12.0. **Son previews de interfaz, no capturas de una ejecución en el estéreo ni del emulador.** La validación visual en Android Emulator y en el WV232 físico se documentará por separado cuando sus pruebas terminen.
 
 <p align="center">
   <strong>VAG Home · Launcher principal</strong><br/>
@@ -26,7 +26,7 @@ Estas imágenes muestran vistas de referencia de las pantallas principales de VA
   <img src="docs/screenshots/sound-studio-preview.svg" alt="Vista previa de Sound Studio con perfiles de audio y ecualizador de diez bandas" width="900"/>
 </p>
 
-> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es una composición ilustrativa; el mapa real usa MapLibre con el estilo Bright de OpenFreeMap y requiere conexión o paquetes offline compatibles. La ruta solo aparece después de calcularse con datos Valhalla disponibles.
+> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es una composición ilustrativa; el mapa real usa MapLibre con el estilo oscuro Fiord de OpenFreeMap y edificios vectoriales 3D cuando la fuente contiene alturas y requiere conexión o paquetes offline compatibles. La ruta solo aparece después de calcularse con datos Valhalla disponibles.
 
 ## Accesos configurables
 
@@ -61,7 +61,7 @@ También se identificaron como posibles mejoras futuras la tarjeta multimedia co
 ## Una sola APK y datos offline
 
 ### Motor de rutas regional
-La APK integrada 0.11.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
+La APK integrada 0.12.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
 
 El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 1. Descarga el extracto OSM de México desde Geofabrik.
@@ -70,17 +70,17 @@ El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 4. Publica el TAR de red vial.
 5. Descarga ese TAR en el job Android y lo integra en la APK final.
 
-El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.11.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
+El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.12.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
 
 ### Mapas visuales
-MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Bright de OpenFreeMap, con una cartografía más contrastada, jerarquía vial, etiquetas y puntos de interés. La interfaz incluye búsqueda superior, controles flotantes de GPS/3D/capas y una hoja inferior para destino y ruta. El administrador ofrece:
+MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Fiord oscuro de OpenFreeMap, con edificios extruidos en 3D cuando hay alturas disponibles, jerarquía vial, etiquetas y puntos de interés. La interfaz incluye cabecera OEM, rail lateral, buscador, panel de maniobra, controles flotantes y resumen de ruta. El administrador ofrece regiones compatibles con Fiord. El cambio de estilo requiere volver a descargar las regiones visuales guardadas con Bright. El administrador ofrece:
 - Durango estatal (vista general).
 - Coahuila estatal (vista general).
 - La Laguna (detalle urbano).
 - Durango capital (detalle urbano).
 - Saltillo (detalle urbano).
 
-Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.11.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
+Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.12.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
 
 OpenFreeMap permite descargas offline de hasta 3,000 teselas o 50 MB por descarga, con un máximo de cuatro solicitudes paralelas y User-Agent identificable. VAG OEM configura User-Agent propio, cuatro solicitudes simultáneas y elimina paquetes que superan el límite. <https://openfreemap.org/tos/>
 
@@ -93,22 +93,27 @@ Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico
 
 ## Navegación
 
-La pantalla usa **MapLibre Native + OpenFreeMap Bright** como cartografía base. Bright es un estilo vectorial claro con carreteras, nombres de calles, zonas y puntos de interés de OpenStreetMap; no es una imagen de mapa estática. [OpenFreeMap](https://openfreemap.org/) ofrece los estilos Bright, Liberty, Positron y Fiord, sin exigir una llave API para el uso público documentado.
+VAG Navigation 0.12.0 adopta un cockpit automotriz nocturno: cabecera OEM, rail lateral, buscador flotante, tarjeta de maniobra, controles de mapa y resumen inferior del recorrido.
 
-### Interfaz de navegación
-- Mapa a pantalla completa con controles de VAG OEM en grafito y rojo.
-- Búsqueda superior por dirección mediante Geocoder del dispositivo cuando está disponible; también acepta coordenadas de latitud y longitud.
-- Selección de destino tocando directamente un punto en el mapa.
-- Controles flotantes para centrar en la última posición GPS disponible, cambiar perspectiva 3D y abrir las opciones de capas.
-- Tarjeta inferior adaptable: exploración, destino seleccionado o vista previa de ruta, con distancia, duración estimada e instrucción inicial cuando Valhalla devuelve esos datos.
-- La ruta se dibuja con un contorno oscuro y un trazo rojo Volkswagen para que destaque sobre las calles.
+### Cartografía y perspectiva
+- MapLibre Native 13.6.1 con estilo **Fiord** de OpenFreeMap para una base nocturna de alto contraste.
+- Capa `fill-extrusion` propia sobre el source vectorial `openmaptiles`, source-layer `building`, usando `render_height` y `render_min_height`. Los edificios aparecen desde zoom 14 cuando la región tiene alturas OSM disponibles.
+- Cámara inicial inclinada a 58 grados y zoom urbano; el control 3D alterna perspectiva y vista cenital.
+- La ruta Valhalla conserva el trazo rojo Volkswagen con contorno oscuro.
+- El indicador de velocidad usa la última velocidad GPS reportada por Android; el límite de velocidad permanece sin dato hasta integrar una fuente fiable de señales viales.
 
-### Motor y mapas offline
-- Cálculo local con Valhalla cuando el paquete vial de la región está integrado o importado.
-- Paquetes visuales descargables para Durango, Coahuila, La Laguna, Durango capital y Saltillo. El gestor y la navegación comparten el estilo Bright.
-- Atribución de cartografía: OpenFreeMap / OpenMapTiles y datos de OpenStreetMap (ODbL).
+### Interacción
+- Búsqueda por dirección con Geocoder Android o por coordenadas `latitud,longitud`.
+- Selección de destino tocando el mapa.
+- Panel superior de maniobra: muestra la primera instrucción que entrega Valhalla cuando hay una ruta calculada; no inventa distancias de giro.
+- Panel inferior: distancia, duración estimada y hora de llegada calculada a partir del tiempo de ruta.
+- Controles laterales para reportes, capas, centrar GPS, perspectiva 3D y zoom.
+- Gestor de mapas offline actualizado al estilo Fiord.
 
-**Límites actuales:** la búsqueda de direcciones necesita conexión y un proveedor Geocoder disponible. Las coordenadas pueden introducirse manualmente. La vista previa de ruta no es todavía guía giro a giro: no hay seguimiento continuo del recorrido, voz, tráfico en vivo, accidentes comunitarios ni recálculo automático como en Waze o Google Maps. Las alertas que se reportan desde el equipo son locales y no se comparten con otros conductores.
+### Límites reales
+El mapa vectorial y la extrusión 3D funcionan con conexión o con teselas offline compatibles. La altura y densidad de edificios dependen de los datos OSM de cada zona; no es una vista satelital ni edificios fotorealistas. El seguimiento GPS continuo, recálculo automático, voz, tráfico en vivo y alertas comunitarias no están implementados. El panel de velocidad no muestra un límite legal si no existe una fuente de señales validada.
+
+**Migración de mapas offline:** las regiones descargadas con el estilo Bright de versiones anteriores no corresponden al nuevo estilo Fiord. Después de actualizar, elimina y vuelve a descargar las regiones visuales para conservarlas sin conexión.
 
 ## Vehículo y datos CANBUS / OBD-II
 La vista Vehículo presenta los campos de nivel de combustible, volumen estimado, autonomía, consumo instantáneo/promedio (km/L y L/100 km), viajes A/B, tiempo, distancia, velocidad promedio/máxima, RPM, temperatura de refrigerante, carga, acelerador, voltaje y estados de puertas/luces. Los valores se muestran como no disponibles hasta tener un decodificador CANBUS/OBD compatible y confirmar los PIDs/señales que entrega la radio. No se inventan lecturas. El volumen en litros y la autonomía requieren calibrar la capacidad del tanque y validar las señales de nivel/consumo.
@@ -130,8 +135,8 @@ La silueta roja de tres vistas se basa en la lámina del Polo proporcionada para
 - CANBUS de solo lectura pendiente.
 
 ## Builds
-- APK base automática: `VAG-OEM-WV232-0.11.0-BASE-debug-APK` (sin grafo precargado).
-- APK con grafo regional: `VAG-OEM-WV232-0.11.0-OFFLINE-APK` (flujo de construcción de datos).
+- APK base automática: `VAG-OEM-WV232-0.12.0-BASE-debug-APK` (sin grafo precargado).
+- APK con grafo regional: `VAG-OEM-WV232-0.12.0-OFFLINE-APK` (flujo de construcción de datos).
 - JDK 21 (CI) · Gradle 8.11.1 · Android SDK 36.
 
 ## Validación
