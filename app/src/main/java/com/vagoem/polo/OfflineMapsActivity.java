@@ -122,12 +122,19 @@ public class OfflineMapsActivity extends Activity {
   if(requestCode!=REQUEST_ROUTE_TILES||resultCode!=RESULT_OK||data==null||data.getData()==null)return;
   Uri uri=data.getData();status.setText("Importando paquete de red vial…");
   new Thread(()->{
-   File target=new File(getFilesDir(),"vag_valhalla_tiles.tar");long copied=0;
-   try(InputStream in=getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(target)){
+   File target=new File(getFilesDir(),"vag_valhalla_tiles.tar");
+   File temp=new File(getFilesDir(),"vag_valhalla_tiles.tar.tmp");
+   long copied=0;
+   try(InputStream in=getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(temp)){
     if(in==null)throw new IllegalStateException("No se pudo abrir el archivo seleccionado.");
-    byte[] buffer=new byte[1024*1024];int n;while((n=in.read(buffer))!=-1){copied+=n;if(copied>2L*1024L*1024L*1024L)throw new IllegalStateException("El paquete supera el límite de 2 GB.");out.write(buffer,0,n);}out.flush();
+    byte[] buffer=new byte[1024*1024];int n;
+    while((n=in.read(buffer))!=-1){copied+=n;if(copied>2L*1024L*1024L*1024L)throw new IllegalStateException("El paquete supera el límite de 2 GB.");out.write(buffer,0,n);}
+    out.flush();
     if(copied<1024L*1024L)throw new IllegalStateException("El archivo es demasiado pequeño para un extracto Valhalla.");
-    runOnUiThread(()->{status.setText(String.format(Locale.US,"Paquete de rutas importado · %.1f MB. Valhalla está listo para abrir la red vial.",copied/1048576.0));refreshStorage();});
+    if(target.exists()&&!target.delete())throw new IllegalStateException("No se pudo reemplazar el paquete anterior.");
+    if(!temp.renameTo(target))throw new IllegalStateException("No se pudo finalizar la instalación del paquete.");
+    final long importedBytes=copied;
+    runOnUiThread(()->{status.setText(String.format(Locale.US,"Paquete de rutas importado · %.1f MB. Valhalla está listo para abrir la red vial.",importedBytes/1048576.0));refreshStorage();});
    }catch(Exception e){temp.delete();runOnUiThread(()->status.setText("No se pudo importar el paquete: "+e.getMessage()));}
   },"VAG-RoutePack-Import").start();
  }
