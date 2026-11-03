@@ -48,7 +48,8 @@ public class MainActivity extends Activity {
    Toast.makeText(this,"No se pudo abrir el informe: "+error.getMessage(),Toast.LENGTH_LONG).show();
   }
  }
-\n private void refreshGpsUi(){if(ui!=null){ui.setGpsSnapshot(GpsTelemetryEngine.read(this,null));}}
+
+ private void refreshGpsUi(){if(ui!=null){ui.setGpsSnapshot(GpsTelemetryEngine.read(this,null));}}
  private void showGpsDiagnostics(){
   GpsTelemetryEngine.Snapshot g=GpsTelemetryEngine.read(this,null);
   String coord=Double.isFinite(g.latitude)?String.format(Locale.US,"%.6f, %.6f",g.latitude,g.longitude):"Sin posición guardada";
