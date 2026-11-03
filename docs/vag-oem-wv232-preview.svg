@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="844" viewBox="0 0 1440 844" role="img" aria-labelledby="title desc">
+<title id="title">Bienvenido · Volkswagen Polo 2020 — VAG OEM WV232</title>
+<desc id="desc">Vista previa del launcher Android en estilo Volkswagen Discover Media: panel grafito, acentos rojos y ocho accesos principales.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#111925"/><stop offset=".55" stop-color="#080d15"/><stop offset="1" stop-color="#05080e"/></linearGradient>
+  <linearGradient id="header" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1b2430"/><stop offset="1" stop-color="#111720"/></linearGradient>
+  <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#202a37"/><stop offset=".52" stop-color="#151d28"/><stop offset="1" stop-color="#0d141e"/></linearGradient>
+  <linearGradient id="redline" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8b1426"/><stop offset=".5" stop-color="#ff334b"/><stop offset="1" stop-color="#9a192c"/></linearGradient>
+  <radialGradient id="glow"><stop stop-color="#8b1224" stop-opacity=".25"/><stop offset="1" stop-color="#8b1224" stop-opacity="0"/></radialGradient>
+  <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#718094" opacity=".12"/></pattern>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="12"/><feOffset dy="8"/><feComponentTransfer><feFuncA type="linear" slope=".38"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="redglow" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="7"/></filter>
+</defs>
+<rect width="1440" height="844" fill="url(#bg)"/>
+<ellipse cx="790" cy="430" rx="670" ry="430" fill="url(#glow)"/>
+<rect y="118" width="1440" height="635" fill="url(#dots)" opacity=".5"/>
+<!-- Header -->
+<rect width="1440" height="120" fill="url(#header)"/>
+<path d="M0 119.5H1440" stroke="#455160" stroke-width="1.5"/>
+<circle cx="75" cy="59" r="34" fill="none" stroke="#f3f6fa" stroke-width="3.5"/>
+<path d="M51 39l17 39 8-20 9 20 18-39M59 36l16 32 16-32M54 72l9 12 12-24 12 24 12-12" fill="none" stroke="#f3f6fa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M135 25V94" stroke="#536070" stroke-width="1.5"/>
+<text x="165" y="55" fill="#f5f7fa" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="2">POLO <tspan fill="#f04458">2020</tspan></text>
+<text x="168" y="84" fill="#a6b0bc" font-family="Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="4">BIENVENIDO</text>
+<text x="720" y="60" text-anchor="middle" fill="#f5f7fa" font-family="Arial, sans-serif" font-size="43" font-weight="300">10:24</text>
+<text x="720" y="87" text-anchor="middle" fill="#9aa6b4" font-family="Arial, sans-serif" font-size="15" letter-spacing="2">LUN · 03 NOV</text>
+<g fill="#d9e0e8" font-family="Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.3">
+ <text x="1080" y="66">GPS</text><text x="1175" y="66">◇ BT</text><text x="1287" y="66">◉ Wi-Fi</text><text x="1395" y="66" text-anchor="end">Ⅱ AUDIO</text>
+</g>
+<path d="M620 119H820" stroke="#ff334b" stroke-width="3"/>
+<path d="M620 119H820" stroke="#ff334b" stroke-width="12" opacity=".32" filter="url(#redglow)"/>
+<!-- Main grid -->
+<g filter="url(#shadow)">
+  <g transform="translate(74 175)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <rect x="1" y="1" width="298" height="243" rx="11" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+    <g transform="translate(150 74)" fill="none" stroke="#f2f5f8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="-38" y="-22" width="76" height="49" rx="8"/><path d="M-25 -29L24 -57M-18 2H22M-18 14H10"/><circle cx="-20" cy="-6" r="6" fill="#f2f5f8" stroke="none"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Radio</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">FM / AM</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(398 175)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 75)" fill="none" stroke="#f2f5f8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M-6 28V-39L37 -53V19"/><ellipse cx="-19" cy="31" rx="14" ry="10" fill="#f2f5f8" stroke="none"/><ellipse cx="24" cy="22" rx="14" ry="10" fill="#f2f5f8" stroke="none"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Media</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">Música</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(722 175)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 74)" fill="none" stroke="#f2f5f8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M-32 -42c-10 6-13 20-8 32 14 33 43 59 75 73 13 6 28 0 33-12l-25-21-17 14c-17-8-31-22-40-39l14-16z"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Teléfono</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">Bluetooth</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(1046 175)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#6a4650" stroke-width="1.6"/>
+    <g transform="translate(150 72)" fill="none" stroke="#f2f5f8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="-31" y="-48" width="62" height="96" rx="9"/><path d="M-9 34H9M-4 -37H4"/><path d="M6 -1l12 -12a15 15 0 0 1 21 21L25 21a15 15 0 0 1-21 0"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="27" font-weight="600">App-Connect</text>
+    <text x="150" y="193" text-anchor="middle" fill="#ff7180" font-family="Arial" font-size="17">CPLink</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(74 450)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 73)" fill="none" stroke="#f2f5f8" stroke-width="5.5" stroke-linejoin="round"><path d="M0 -48L39 33 0 10 -39 33z"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="27" font-weight="600">Navegación</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">GPS offline</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(398 450)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 73)" fill="none" stroke="#f2f5f8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M-49 8l8-33q4-13 18-13h46q14 0 18 13l8 33M-50 8h100v29h-12l-7-13h-62l-7 13h-12z"/><path d="M-35 -13h70"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Vehículo</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">Estado del Polo</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(722 450)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 73)" fill="none" stroke="#f2f5f8" stroke-width="5" stroke-linejoin="round"><circle r="29"/><circle r="9"/><path d="M0 -48v13M0 35v13M-48 0h13M35 0h13M-34 -34l10 10M24 24l10 10M34 -34L24 -24M-24 24l-10 10"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Ajustes</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">Sistema</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+  <g transform="translate(1046 450)">
+    <rect width="300" height="245" rx="12" fill="url(#tile)" stroke="#465363" stroke-width="1.6"/>
+    <g transform="translate(150 74)" fill="none" stroke="#f2f5f8" stroke-width="8" stroke-linecap="round"><path d="M-44 35V9M-22 35V-12M0 35V-43M22 35V-4M44 35V-28"/></g>
+    <text x="150" y="161" text-anchor="middle" fill="#f4f6f8" font-family="Arial" font-size="29" font-weight="600">Sonido</text>
+    <text x="150" y="193" text-anchor="middle" fill="#9ba7b5" font-family="Arial" font-size="17">Ecualizador</text>
+    <rect x="25" y="239" width="250" height="3" rx="2" fill="url(#redline)"/>
+  </g>
+</g>
+<!-- Footer -->
+<path d="M0 752H1440" stroke="#465160" stroke-width="1.4"/>
+<path d="M0 753H1440" stroke="#e31b36" stroke-opacity=".8" stroke-width="2"/>
+<text x="40" y="800" fill="#8793a2" font-family="Arial" font-size="14" font-weight="600" letter-spacing="2">VOLKSWAGEN  ·  POLO 2020</text>
+<text x="1400" y="800" text-anchor="end" fill="#a8b2bf" font-family="Arial" font-size="14" font-weight="600" letter-spacing="1.5">APP-CONNECT  ·  CPLINK  ·  RED EDITION</text>
+</svg>
