@@ -78,18 +78,18 @@ public class VagUiView extends View {
   p.setColor(RED);c.drawRoundRect(new RectF(477,77,547,80),2,2,p);
  }
  private void home(Canvas c){
-  String[] names={"Radio","Media","Teléfono","App-Connect","Navegación","Vehículo","Ajustes","Sonido"};
-  String[] subs={"FM / AM","Música","Bluetooth","CPLink","GPS offline","Datos del vehículo","Sistema","Ecualizador"};
+  String[] names={"Radio","Media","Teléfono","App-Connect","Map Live","Vehículo","Ajustes","Sonido"};
+  String[] subs={"FM / AM","Música","Bluetooth","CPLink","Navegador original","Datos del vehículo","Sistema","Ecualizador"};
   String[] glyphs={"◉","♫","☎","▣","➤","▱","⚙","▥"};
   for(int i=0;i<8;i++){
-   int col=i%4,row=i/4;float x=38+col*242,y=119+row*179;
-   drawTile(c,x,y,226,158,i==pressedTile);
-   txt(c,glyphs[i],x+113,y+63,39,WHITE,false,Paint.Align.CENTER);
-   txt(c,names[i],x+113,y+106,16,WHITE,true,Paint.Align.CENTER);
-   txt(c,subs[i],x+113,y+130,10,i==3?0xFFEFA0AA:MUTED,false,Paint.Align.CENTER);
-   softAccent(c,x+18,y+153,x+208,y+156,i==pressedTile);
+   int col=i%2,row=i/2;float x=38+col*478,y=96+row*104;
+   drawTile(c,x,y,458,92,i==pressedTile);
+   txt(c,glyphs[i],x+48,y+57,42,WHITE,false,Paint.Align.CENTER);
+   txt(c,names[i],x+96,y+43,21,WHITE,true,Paint.Align.LEFT);
+   txt(c,subs[i],x+96,y+68,13,i==4?0xFFEFA0AA:MUTED,false,Paint.Align.LEFT);
+   softAccent(c,x+16,y+87,x+442,y+90,i==pressedTile);
   }
-  txt(c,"MANTÉN PRESIONADO UN ACCESO PARA ASIGNAR SU APP",512,528,8,0xFFE58B96,true,Paint.Align.CENTER);
+  txt(c,"MANTÉN PRESIONADO UN ACCESO PARA VINCULAR SU APLICACIÓN",512,527,10,0xFFE58B96,true,Paint.Align.CENTER);
  }
  private void drawTile(Canvas c,float x,float y,float w,float h,boolean active){
   if(active){p.setColor(0x28FF405B);c.drawRoundRect(new RectF(x-4,y-4,x+w+4,y+h+4),13,13,p);}
@@ -175,7 +175,7 @@ public class VagUiView extends View {
  private String gpsValue(float v,int d){return Float.isFinite(v)?String.format(Locale.US,d==0?"%.0f":"%.1f",v):"—";}
  private String[] gpsGeneralValues(){if(gpsSnapshot==null)return new String[]{"—","—","—","—","—","—"};return new String[]{gpsValue(gpsSnapshot.speedKmh,0),gpsValue(gpsSnapshot.altitudeMeters,0),gpsValue(gpsSnapshot.accuracyMeters,0),gpsSnapshot.satellitesUsed<0?"—":String.valueOf(gpsSnapshot.satellitesUsed),gpsSnapshot.satellitesVisible<0?"—":String.valueOf(gpsSnapshot.satellitesVisible),gpsValue(gpsSnapshot.bearingDegrees,0)};}
  private String[] gpsTripValues(){if(gpsSnapshot==null)return new String[]{"0.00","00:00","0.0","0","—","—"};long mins=gpsSnapshot.tripDurationMs/60000L;return new String[]{String.format(Locale.US,"%.2f",gpsSnapshot.tripKm),String.format(Locale.US,"%02d:%02d",mins/60,mins%60),gpsValue(gpsSnapshot.averageSpeedKmh,1),gpsValue(gpsSnapshot.maxSpeedKmh,0),gpsValue(gpsSnapshot.speedKmh,0),gpsValue(gpsSnapshot.accuracyMeters,0)};}
- private void metric(Canvas c,float x,float y,float w,float h,String label,String value,String unit,String source){panel(c,x,y,w,h);txt(c,label,x+11,y+19,8,0xFFAEB9C5,true,Paint.Align.LEFT);txt(c,value,x+11,y+55,23,WHITE,true,Paint.Align.LEFT);txt(c,unit,x+w-11,y+54,9,0xFFE26A79,true,Paint.Align.RIGHT);txt(c,source,x+11,y+76,7,0xFF718091,false,Paint.Align.LEFT);}
+ private void metric(Canvas c,float x,float y,float w,float h,String label,String value,String unit,String source){panel(c,x,y,w,h);txt(c,label,x+12,y+21,10,0xFFAEB9C5,true,Paint.Align.LEFT);txt(c,value,x+12,y+57,28,WHITE,true,Paint.Align.LEFT);txt(c,unit,x+w-12,y+56,11,0xFFE26A79,true,Paint.Align.RIGHT);txt(c,source,x+12,y+79,8,0xFF718091,false,Paint.Align.LEFT);}
  private void page(Canvas c,String title,String sub,String button,String action){
   title(c,title,sub);panel(c,82,149,860,355);
   txt(c,title.toUpperCase(Locale.ROOT),512,282,27,WHITE,true,Paint.Align.CENTER);
@@ -196,9 +196,12 @@ public class VagUiView extends View {
   txt(c,"‹ INICIO",50,539,9,RED,true,Paint.Align.LEFT);
  }
  private void title(Canvas c,String t,String s){
-  txt(c,"‹",43,119,26,RED,false,Paint.Align.LEFT);
-  txt(c,t,82,110,22,WHITE,true,Paint.Align.LEFT);
-  txt(c,s,83,132,9,MUTED,false,Paint.Align.LEFT);
+  p.setColor(0xFF263442);c.drawRoundRect(new RectF(20,94,112,145),10,10,p);
+  p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1);p.setColor(0xFF687889);c.drawRoundRect(new RectF(20,94,112,145),10,10,p);p.setStyle(Paint.Style.FILL);
+  txt(c,"‹",43,127,32,RED,true,Paint.Align.CENTER);
+  txt(c,"VOLVER",78,124,10,WHITE,true,Paint.Align.LEFT);
+  txt(c,t,132,112,24,WHITE,true,Paint.Align.LEFT);
+  txt(c,s,133,137,12,MUTED,false,Paint.Align.LEFT);
  }
  private void panel(Canvas c,float x,float y,float w,float h){
   p.setShader(new LinearGradient(x,y,x+w,y+h,0xFF1C2631,0xFF111821,Shader.TileMode.CLAMP));
@@ -237,20 +240,19 @@ public class VagUiView extends View {
   if(tile>=0&&tile<actions.length)act(actions[tile]);
  }
  private int hitTile(float x,float y){
-  if("HOME".equals(screen)&&y>=119&&y<457){int col=(int)((x-38)/242);int row=y<278?0:1;return col>=0&&col<4?row*4+col:-1;}
+  if("HOME".equals(screen)&&y>=96&&y<512){int col=x<512?0:1;int row=(int)((y-96)/104);return col>=0&&col<2&&row>=0&&row<4?row*2+col:-1;}
   if("PHONE".equals(screen)&&y>=200&&y<463){int col=x<512?0:1;int row=y<345?0:1;return row*2+col;}
   return -1;
  }
  @Override public boolean performClick(){super.performClick();return true;}
  private void tap(float x,float y,int down){
   if("HOME".equals(screen)){
-   if(y>=119&&y<278){int col=(int)((x-38)/242);if(col>=0&&col<4){String[] a={"RADIO","MEDIA","PHONE","OPEN_CARPLAY"};act(a[col]);}}
-   else if(y>=298&&y<457){int col=(int)((x-38)/242);if(col>=0&&col<4){String[] a={"NAVIGATION","VEHICLE","SETTINGS","SOUND"};act(a[col]);}}
+   if(y>=96&&y<512){int col=x<512?0:1;int row=(int)((y-96)/104);String[] a={"RADIO","MEDIA","PHONE","OPEN_CARPLAY","NAVIGATION","VEHICLE","SETTINGS","SOUND"};int index=row*2+col;if(index>=0&&index<a.length)act(a[index]);}
    return;
   }
   if("VEHICLE".equals(screen)||"TRIP".equals(screen)){
    if(y>=145&&y<=184){vehicleTab=Math.max(0,Math.min(3,(int)(x/256)));screen="VEHICLE";invalidate();return;}
-   if(x<75&&y<145){act("HOME");return;}
+   if(x<120&&y<150){act("BACK");return;}
    if(y>=523&&y<559&&x>=850){act(vehicleTab==1?"RESET_GPS_TRIP":vehicleTab==0?"OPEN_GPS_DIAGNOSTICS":"OPEN_CANBUS");return;}
    return;
   }
