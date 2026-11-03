@@ -596,10 +596,10 @@ public class NavigationActivity extends Activity {
    LatLngBounds.Builder builder=new LatLngBounds.Builder();
    for(LatLng p:points)builder.include(p);
    LatLngBounds bounds=builder.build();
-   map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,dp(72),dp(94),dp(72),dp(230)),650);
+   map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,dp(118),dp(145),dp(118),dp(230)),650);
   }catch(Exception e){
    LatLng end=points.get(points.size()-1);
-   map.animateCamera(CameraUpdateFactory.newLatLngZoom(end,12.3),500);
+   map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(end).zoom(15.4).tilt(perspective3d?58:0).build()),500);
   }
  }
 
@@ -700,7 +700,7 @@ public class NavigationActivity extends Activity {
      CameraPosition c=map.getCameraPosition();
      map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(c).tilt(0).build()),350);
     }else if(w==3)startActivity(new Intent(this,OfflineMapsActivity.class));
-    else updateStatus("ESTILO BRIGHT · OPENFREEMAP");
+    else updateStatus("ESTILO FIORD · OPENFREEMAP");
    }).show();
  }
 
