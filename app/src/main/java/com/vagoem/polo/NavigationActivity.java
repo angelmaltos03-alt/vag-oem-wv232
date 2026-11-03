@@ -234,7 +234,7 @@ public class NavigationActivity extends Activity {
   LinearLayout info=new LinearLayout(this);info.setOrientation(LinearLayout.VERTICAL);info.setPadding(dp(13),0,0,0);
   maneuverDistance=label("—",25,WHITE,true);maneuverTitle=label("SELECCIONA UN DESTINO",11,0xFFE2E7EE,true);info.addView(maneuverDistance);info.addView(maneuverTitle);
   card.addView(info,new LinearLayout.LayoutParams(0,-2,1));card.addView(label("///",17,RED,true));
-  int width=Math.min(dp(410),getResources().getDisplayMetrics().widthPixels-dp(112));FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(width,dp(82),Gravity.TOP|Gravity.LEFT);lp.setMargins(dp(94),dp(78),0,0);root.addView(card,lp);
+  int width=Math.min(dp(410),getResources().getDisplayMetrics().widthPixels-dp(112));FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(width,dp(82),Gravity.TOP|Gravity.LEFT);lp.setMargins(dp(94),dp(150),0,0);root.addView(card,lp);
  }
 
  private void updateManeuverBanner(){
@@ -321,7 +321,7 @@ public class NavigationActivity extends Activity {
   int displayWidth=getResources().getDisplayMetrics().widthPixels;
   int searchWidth=Math.min(displayWidth-dp(28),Math.round(displayWidth*0.43f));
   FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(searchWidth,-2,Gravity.TOP|Gravity.LEFT);
-  lp.setMargins(dp(94),dp(10),0,0);
+  lp.setMargins(dp(94),dp(70),0,0);
   root.addView(surface,lp);
  }
 
