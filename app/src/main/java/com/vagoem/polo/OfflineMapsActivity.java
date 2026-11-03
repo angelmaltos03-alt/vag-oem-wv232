@@ -60,7 +60,7 @@ public class OfflineMapsActivity extends Activity {
       if(count>3000||bytes>MAX_BYTES){region.setDownloadState(OfflineRegion.STATE_INACTIVE);runOnUiThread(()->status.setText("Límite del proveedor alcanzado. Paquete pausado; selecciona una región más pequeña."));}
       else if(s.isComplete()){region.setDownloadState(OfflineRegion.STATE_INACTIVE);runOnUiThread(()->{status.setText("Paquete listo para navegación sin conexión: "+p.name);listRegions();refreshStorage();});}
      }
-     @Override public void onError(OfflineRegionError e){runOnUiThread(()->status.setText("Error recuperable de descarga: "+e.getMessage()));}
+     @Override public void onError(OfflineRegionError e){runOnUiThread(()->status.setText("Error recuperable de descarga: "+e.toString()));}
      @Override public void mapboxTileCountLimitExceeded(long limit){region.setDownloadState(OfflineRegion.STATE_INACTIVE);runOnUiThread(()->status.setText("Límite de tiles alcanzado ("+limit+")."));}
     });region.setDownloadState(OfflineRegion.STATE_ACTIVE);}
     @Override public void onError(String error){status.setText("No se pudo crear el paquete: "+error);}
