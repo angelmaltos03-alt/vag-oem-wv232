@@ -44,6 +44,11 @@ public class OfflineMapsActivity extends Activity {
   new Pack("durango-city","Durango capital · detalle","Zona urbana y accesos",23.75,-104.85,24.15,-104.45,7,13),
   new Pack("saltillo-city","Saltillo · detalle","Zona urbana y accesos",25.30,-101.15,25.60,-100.75,7,13)
  };
+ private final Pack[] lagunaCityPacks={
+  new Pack("torreon-city","Torreón · mapa urbano","Calles, colonias y puntos de interés · detalle hasta zoom 16",25.48,-103.56,25.68,-103.30,9,16),
+  new Pack("gomez-palacio-city","Gómez Palacio · mapa urbano","Calles, colonias y puntos de interés · detalle hasta zoom 16",25.48,-103.56,25.64,-103.34,9,16),
+  new Pack("lerdo-city","Lerdo · mapa urbano","Calles, colonias y puntos de interés · detalle hasta zoom 16",25.43,-103.64,25.60,-103.42,9,16)
+ };
  @Override public void onCreate(Bundle b){
   super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(5894|1024|512);
   manager=OfflineManager.getInstance(this);manager.setOfflineMapboxTileCountLimit(TILE_LIMIT);
@@ -59,13 +64,10 @@ public class OfflineMapsActivity extends Activity {
   progress=new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(100);progress.setProgress(0);card(progress);
   storage=label("",12,0xFFD7DEE8,false);card(storage);
   root.addView(label("PAQUETES REGIONALES",16,Color.WHITE,true));
-  for(Pack p:packs){
-   LinearLayout line=new LinearLayout(this);line.setOrientation(LinearLayout.VERTICAL);
-   line.addView(label(p.name,14,Color.WHITE,true));
-   line.addView(label(p.description+"\nZoom "+(int)p.min+"–"+(int)p.max+" · máximo "+TILE_LIMIT+" teselas / 50 MB por descarga",11,0xFF9BA8B7,false));
-   Button d=new Button(this);d.setText("DESCARGAR REGIÓN");d.setOnClickListener(v->download(p));line.addView(d);
-   card(line);
-  }
+  for(Pack p:packs)addPackCard(p);
+  root.addView(label("LA LAGUNA · MAPAS URBANOS POR CIUDAD",16,Color.WHITE,true));
+  root.addView(label("Descarga las tres ciudades por separado para conservar mayor detalle sin superar los límites de cada paquete.",11,0xFF9BA8B7,false));
+  for(Pack p:lagunaCityPacks)addPackCard(p);
   root.addView(label("MAPAS INSTALADOS",16,Color.WHITE,true));
   installedList=new LinearLayout(this);installedList.setOrientation(1);card(installedList);
   button("IMPORTAR PAQUETE DE RUTAS VALHALLA (.TAR)",this::pickRouteTiles);
@@ -74,6 +76,13 @@ public class OfflineMapsActivity extends Activity {
   card(label("El motor y el administrador están dentro de VAG OEM. Los datos cartográficos se descargan desde esta pantalla y se guardan en la base offline de MapLibre. La descarga inicial requiere conexión. OpenFreeMap permite cada descarga de hasta 3,000 teselas o 50 MB, con máximo 4 solicitudes simultáneas y User-Agent identificable. La app identifica sus solicitudes, limita a 4 conexiones simultáneas y pausa al alcanzar 3,000 teselas o 50 MB. El tamaño se comprueba durante la descarga; puede existir una pequeña variación por respuestas que ya estaban en tránsito.",11,0xFFFFC4C4,false));
   card(label("Atribución: OpenFreeMap © OpenMapTiles · Datos de OpenStreetMap (ODbL).",10,0xFFD7DEE8,false));
   setContentView(sc);
+ }
+ private void addPackCard(Pack p){
+  LinearLayout line=new LinearLayout(this);line.setOrientation(LinearLayout.VERTICAL);
+  line.addView(label(p.name,14,Color.WHITE,true));
+  line.addView(label(p.description+"\nZoom "+(int)p.min+"–"+(int)p.max+" · máximo "+TILE_LIMIT+" teselas / 50 MB por descarga",11,0xFF9BA8B7,false));
+  Button d=new Button(this);d.setText("DESCARGAR MAPA");d.setOnClickListener(v->download(p));line.addView(d);
+  card(line);
  }
  private void button(String title,Runnable action){Button b=new Button(this);b.setText(title);b.setOnClickListener(v->action.run());root.addView(b,new LinearLayout.LayoutParams(-1,48));}
  private void refreshStorage(){StatFs fs=new StatFs(getFilesDir().getAbsolutePath());storage.setText(String.format(Locale.US,"Espacio libre en almacenamiento de la app: %.2f GB",fs.getAvailableBytes()/1e9));}
