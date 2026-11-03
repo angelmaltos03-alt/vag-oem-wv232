@@ -1,77 +1,77 @@
 # VAG OEM · Volkswagen Polo 2020 · WV232 / 9070
 
-Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión de desarrollo **0.9.0**.
+Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.10.0**.
 
-## Módulos integrados
+## Módulos
 - VAG Home: launcher OEM horizontal.
-- VAG Navigation: motor de mapas vectoriales MapLibre Native 13.6.1.
-- VAG Map Manager: paquetes regionales offline, progreso, biblioteca y eliminación.
-- VAG Road Alerts: reportes manuales geolocalizados guardados localmente.
-- Valhalla Mobile 0.6.3: motor nativo de cálculo de rutas offline integrado en la APK.
+- VAG Navigation: MapLibre Native 13.6.1.
+- VAG Map Manager: regiones offline, progreso, biblioteca y eliminación.
+- VAG Road Alerts: reportes manuales geolocalizados locales.
+- Valhalla Mobile 0.6.3: motor nativo de rutas offline.
 - VAG Sound Studio: perfiles locales y EQ de 10 bandas.
 - Audio Lab: diagnóstico de micrófono.
-- VAG Vehicle: pantallas de estado/viaje, CANBUS real aún pendiente.
+- VAG Vehicle: pantallas de estado/viaje; CANBUS real pendiente.
 
-## Navegación y cartografía
+## Una sola APK y datos offline
 
-### MapLibre
-El motor de renderizado vectorial y sus pantallas están incluidos en la APK. El estilo Liberty se sirve desde OpenFreeMap. La app configura un User-Agent identificable y limita las solicitudes HTTP simultáneas a cuatro.
+### Motor de rutas regional
+La APK integrada 0.10.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
 
-El administrador permite descargar regiones desde el estéreo:
+El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
+1. Descarga el extracto OSM de México desde Geofabrik.
+2. Recorta Durango-Coahuila y los corredores viales cercanos.
+3. Construye el grafo con Valhalla.
+4. Publica el TAR de red vial.
+5. Descarga ese TAR en el job Android y lo integra en la APK final.
+
+El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.10.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
+
+### Mapas visuales
+MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Liberty de OpenFreeMap. El administrador ofrece:
 - Durango estatal (vista general).
 - Coahuila estatal (vista general).
 - La Laguna (detalle urbano).
 - Durango capital (detalle urbano).
 - Saltillo (detalle urbano).
 
-Los paquetes descargados quedan en la base offline SQLite de MapLibre y pueden utilizarse sin conexión una vez completados. La descarga inicial requiere Wi-Fi/internet. Cada descarga se detiene al alcanzar 3,000 teselas o 50 MB y el paquete excedido se elimina. OpenFreeMap permite offline downloads de hasta 3,000 tiles o 50 MB, hasta cuatro solicitudes concurrentes y User-Agent único. <https://openfreemap.org/tos/>
+Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.10.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
 
-**No se afirma que los mapas vectoriales estén precargados en el APK 0.9.0.** El motor está en el APK; los datos cartográficos regionales se descargan desde el administrador para no inflar la instalación y poder actualizarlos por separado.
+OpenFreeMap permite descargas offline de hasta 3,000 teselas o 50 MB por descarga, con un máximo de cuatro solicitudes paralelas y User-Agent identificable. VAG OEM configura User-Agent propio, cuatro solicitudes simultáneas y elimina paquetes que superan el límite. <https://openfreemap.org/tos/>
 
-### Rutas offline Valhalla
-La APK incluye el motor nativo Valhalla Mobile 0.6.3. La pantalla ya dispone de flujo para:
-- Buscar un destino cuando Android proporciona Geocoder.
-- Obtener posición de origen mediante GPS.
-- Calcular ruta local con Valhalla.
-- Dibujar geometría y mostrar distancia, tiempo e instrucción inicial.
-
-Para habilitar el cálculo se necesita el archivo de red vial `vag_valhalla_tiles.tar`. El administrador incluye un importador para instalarlo en el almacenamiento privado de la app. **El paquete de red vial todavía no está incluido en la APK 0.9.0.**
-
-### Construcción del paquete de rutas
-Se agregó `.github/workflows/build-offline-route-data.yml`, ejecutable manualmente desde GitHub Actions. El flujo:
-1. Descarga el extracto OSM de México desde Geofabrik.
-2. Recorta la región Durango-Coahuila y sus corredores de conexión.
-3. Construye el grafo con la imagen oficial Valhalla.
-4. Publica el artefacto `VAG-OEM-Durango-Coahuila-Valhalla-Tiles`.
-
-Script: `tools/build-valhalla-region.sh`.
-Tras ejecutar el workflow, el artefacto TAR se puede instalar desde VAG Navigation → Mapas offline → Importar paquete de rutas Valhalla. La siguiente fase será publicar un paquete regional versionado y hacer que la app lo gestione desde su propio descargador.
-
-### Alertas de carretera
+### Alertas
 - Reportes manuales: peligro, bache, obra/cierre, inundación, accidente, vehículo detenido, retén/control y otro.
 - Coordenadas GPS y nota opcional.
-- Marcadores y lista persistente.
-- Disponible sin conexión en el equipo donde se guardó.
+- Marcadores y lista persistente en el dispositivo.
 
-**Las alertas actuales son locales; no son Waze ni se sincronizan entre vehículos.** Las alertas comunitarias y tráfico en vivo requieren backend/feed de datos y conectividad.
+Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico y alertas comunitarias hace falta un backend/feed y conectividad.
+
+## Navegación
+- Búsqueda por proveedor Geocoder cuando está disponible.
+- Búsqueda offline por coordenadas `latitud,longitud`.
+- GPS de origen.
+- Cálculo de ruta offline Valhalla cuando está instalado el grafo.
+- Dibujo de ruta y resumen de distancia/tiempo/instrucción inicial.
+
+La guía giro a giro continua con seguimiento GPS y voz aún requiere completar y validar el módulo de navegación activa.
 
 ## Sonido
 - EQ visual de 10 bandas, -6 a +6 dB.
 - Perfiles OEM equilibrado, Pop, Rock, Voz y Personalizado.
 - Diagnóstico de efectos Android, códecs y salidas.
-- No procesa globalmente radio/CPLink: hace falta interfaz del DSP o servicio privilegiado del fabricante.
+- No procesa globalmente radio/CPLink: hace falta acceso al DSP o servicio privilegiado del fabricante.
 
-## Compatibilidad y seguridad
+## Compatibilidad y protección
 - Android 10 del WV232 está dentro del rango soportado.
 - minSdk 24, targetSdk 32.
 - CPLink original no se modifica.
 - No se modifica firmware, MCU, Factory Settings ni CANBUS.
-- La cámara de reversa conserva su conmutación original.
-- CANBUS continúa pendiente de integración de solo lectura.
+- Cámara de reversa conserva su conmutación original.
+- CANBUS de solo lectura pendiente.
 
-## Build
-JDK 17 · Gradle 8.9 · Android Gradle Plugin 8.7.3 · SDK 35.
-Artefacto de Actions: `VAG-OEM-WV232-0.9.0-debug-APK`.
+## Builds
+- APK base automática: `VAG-OEM-WV232-0.10.0-BASE-debug-APK` (sin grafo precargado).
+- APK con grafo regional: `VAG-OEM-WV232-0.10.0-OFFLINE-APK` (flujo de construcción de datos).
+- JDK 17 · Gradle 8.9 · Android Gradle Plugin 8.7.3 · SDK 35.
 
-## Estado de validación
-La implementación está guardada en GitHub. Compilación Android y pruebas de rendimiento/compatibilidad en el WV232 siguen pendientes de confirmación. No se declara una APK compilada hasta que Actions reporte éxito.
+## Validación
+Código y workflows guardados en GitHub. La compilación final del APK con grafo regional y pruebas en hardware WV232 siguen pendientes de confirmación. No se declara éxito de build hasta que Actions lo reporte.
