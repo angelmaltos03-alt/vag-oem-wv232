@@ -525,6 +525,7 @@ public class NavigationActivity extends Activity {
   if(map!=null)map.animateCamera(CameraUpdateFactory.newLatLngZoom(point,14.3));
   updateStatus("DESTINO MARCADO");
   rebuildBottomSheet();
+  updateManeuverBanner();
  }
 
  private void placeDestinationMarker(){
@@ -541,7 +542,9 @@ public class NavigationActivity extends Activity {
   routeSummary="";
   routeDistance="";
   routeDuration="";
+  routeMinutes=0;
   nextInstruction="";
+  updateManeuverBanner();
  }
 
  private void clearDestination(){
@@ -608,11 +611,13 @@ public class NavigationActivity extends Activity {
      routeLine=map.addPolyline(new PolylineOptions().addAll(points).color(RED).width(7));
      routeDistance=distance;
      routeDuration=duration;
+     routeMinutes=(int)Math.ceil(summary.optDouble("time",0)/60.0);
      nextInstruction=instruction;
      routeSummary="READY";
      fitRoute(points);
      updateStatus("RUTA CALCULADA  ·  VISTA PREVIA");
      rebuildBottomSheet();
+     updateManeuverBanner();
     });
    }catch(Exception e){
     runOnUiThread(()->updateStatus("NO SE PUDO CALCULAR LA RUTA · "+safeMessage(e)));
@@ -664,9 +669,10 @@ public class NavigationActivity extends Activity {
   if(map!=null){
    if(locationMarker!=null)map.removeMarker(locationMarker);
    locationMarker=map.addMarker(new MarkerOptions().position(currentLocation).title("Mi ubicación"));
-   map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,15.2));
+   map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(currentLocation).zoom(16.2).tilt(perspective3d?58:0).build()),600);
   }
   updateStatus("GPS  ·  UBICACIÓN DEL EQUIPO");
+  if(speedValue!=null)speedValue.setText(loc.hasSpeed()?String.valueOf(Math.round(loc.getSpeed()*3.6f)):"—");
  }
 
  private void reportAlert(){
@@ -712,12 +718,18 @@ public class NavigationActivity extends Activity {
   }).setPositiveButton("Cerrar",null).show();
  }
 
+ private void zoomMap(double delta){
+  if(map==null)return;
+  double z=Math.max(10,Math.min(20,map.getCameraPosition().zoom+delta));
+  map.animateCamera(CameraUpdateFactory.zoomTo(z),220);
+ }
  private void toggle3d(){
   if(map==null)return;
   CameraPosition c=map.getCameraPosition();
-  double tilt=c.tilt>20?0:55;
-  map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(c).tilt(tilt).build()),350);
-  updateStatus(tilt>0?"PERSPECTIVA 3D":"VISTA SUPERIOR");
+  double tilt=c.tilt>20?0:58;
+  perspective3d=tilt>0;
+  map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(c).tilt(tilt).zoom(Math.max(c.zoom,15.2)).build()),450);
+  updateStatus(tilt>0?"PERSPECTIVA 3D · EDIFICIOS":"VISTA SUPERIOR");
  }
 
  private void showLayers(){
