@@ -640,7 +640,7 @@ public class NavigationActivity extends Activity {
  private void startGpsTracking(){
   if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED)return;
   try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-   if(gpsListener==null)gpsListener=new LocationListener(){@Override public void onLocationChanged(Location location){updateVehiclePosition(location);}};
+   if(gpsListener==null)gpsListener=new LocationListener(){@Override public void onLocationChanged(Location location){updateVehiclePosition(location);}@Override public void onStatusChanged(String provider,int status,Bundle extras){}@Override public void onProviderEnabled(String provider){}@Override public void onProviderDisabled(String provider){}};
    if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER))lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000L,2f,gpsListener);
    if(lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000L,8f,gpsListener);
   }catch(Exception e){updateStatus("GPS NO DISPONIBLE · "+safeMessage(e));}
