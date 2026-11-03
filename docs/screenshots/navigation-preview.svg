@@ -60,7 +60,7 @@
  <rect x="18" y="16" width="700" height="66" rx="13" fill="#151e29" stroke="#394654"/>
  <circle cx="55" cy="48" r="17" fill="#263442"/><path d="M49 48h12M55 42v12" stroke="#e34a60" stroke-width="2" stroke-linecap="round"/>
  <text x="85" y="44" fill="#f1f4f7" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700">Buscar destino o dirección</text>
- <text x="85" y="63" fill="#9ba8b7" font-family="Arial,Helvetica,sans-serif" font-size="9">VAG NAVIGATION  ·  MAPA EN VIVO</text>
+ <text x="85" y="63" fill="#9ba8b7" font-family="Arial,Helvetica,sans-serif" font-size="9">VAG NAVIGATION  ·  CARTOGRAFÍA OPENFREEMAP</text>
  <rect x="635" y="29" width="68" height="37" rx="8" fill="#3a2029" stroke="#b64b5c"/><text x="669" y="52" text-anchor="middle" fill="#fff" font-family="Arial" font-size="10" font-weight="700">BUSCAR</text>
 </g>
 <!-- map controls -->
