@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
   case "MEDIA":showScreen("MEDIA");break;
   case "PHONE":showScreen("PHONE");break;
   case "NAVIGATION":openDefaultNavigationApp();break;
-  case "OPEN_NAV":startActivity(new Intent(this,NavigationActivity.class));break;
+  case "OPEN_NAV":case "OPEN_VAG_NAV":startActivity(new Intent(this,NavigationActivity.class));break;
   case "VEHICLE":showScreen("VEHICLE");break;
   case "TRIP":showScreen("TRIP");break;
   case "SETTINGS":showScreen("SETTINGS");break;
