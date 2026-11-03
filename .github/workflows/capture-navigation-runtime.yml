@@ -1,6 +1,11 @@
 name: Capture VAG Navigation runtime screenshot
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - '.github/workflows/capture-navigation-runtime.yml'
 permissions:
   contents: write
 jobs:
