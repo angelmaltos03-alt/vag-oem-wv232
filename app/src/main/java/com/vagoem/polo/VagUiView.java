@@ -257,7 +257,7 @@ public class VagUiView extends View {
    return;
   }
   if("PHONE".equals(screen)){
-   if(x<75&&y<145){act("HOME");return;}
+   if(x<120&&y<150){act("BACK");return;}
    if(y>=200&&y<463){int col=x<512?0:1,row=y<345?0:1;String[] a={"OPEN_PHONE","OPEN_CALL_LOG","OPEN_CONTACTS","OPEN_FAVORITES"};act(a[row*2+col]);}
    return;
   }
