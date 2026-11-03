@@ -88,6 +88,15 @@ adb shell am start -n com.vagoem.polo/.NavigationActivity
 sleep 25
 capture 15-navigation-map
 
+echo "== Probando búsqueda y selección de destino =="
+adb shell input tap 480 40
+sleep 2
+adb shell input text '25.57,-103.495'
+sleep 1
+adb shell input tap 966 40
+sleep 5
+capture 16-navigation-destination
+
 echo "== Guardando diagnóstico =="
 adb logcat -d > "$OUT/logcat.txt"
 adb shell dumpsys activity activities > "$OUT/activities.txt"
