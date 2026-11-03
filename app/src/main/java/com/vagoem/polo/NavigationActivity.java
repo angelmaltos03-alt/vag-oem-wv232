@@ -52,7 +52,7 @@ import org.json.JSONObject;
  */
 public class NavigationActivity extends Activity {
  private static final int REQ_LOCATION=710;
- private static final String STYLE="https://tiles.openfreemap.org/styles/fiord";
+ private static final String STYLE="https://tiles.openfreemap.org/styles/dark";
  private static final int BG=0xF2141D27;
  private static final int BG_DARK=0xFF0B111A;
  private static final int BG_CARD=0xFF1C2631;
@@ -183,7 +183,7 @@ public class NavigationActivity extends Activity {
     styleReady=true;
     add3dBuildings(style);
     map.setCameraPosition(new CameraPosition.Builder()
-      .target(defaultCenter).zoom(15.4).tilt(58).bearing(0).build());
+      .target(defaultCenter).zoom(15.8).tilt(62).bearing(0).build());
     map.addOnMapClickListener(point->{setDestination(point,"Punto seleccionado");return true;});
     updateStatus("MAPA 3D LISTO  ·  LA LAGUNA");
     updateManeuverBanner();
@@ -255,13 +255,25 @@ public class NavigationActivity extends Activity {
 
  private void add3dBuildings(Style style){
   try{
-   String sourceId=style.getSource("openmaptiles")!=null?"openmaptiles":(style.getSource("openfreemap")!=null?"openfreemap":null);
-   if(sourceId==null){updateStatus("MAPA OSCURO LISTO · FUENTE 3D NO DISPONIBLE");return;}
+   // OpenFreeMap vector styles expose OpenMapTiles as the source id.
+   // Keep the extrusion below road labels so street names remain legible.
+   String sourceId=style.getSource("openmaptiles")!=null?"openmaptiles":null;
+   if(sourceId==null){updateStatus("MAPA OSCURO LISTO · ESTA ZONA NO EXPONE EDIFICIOS 3D");return;}
    if(style.getLayer("vag-buildings-3d")!=null)return;
-   FillExtrusionLayer buildings=new FillExtrusionLayer("vag-buildings-3d",sourceId);buildings.setSourceLayer("building");buildings.setMinZoom(14f);
+   FillExtrusionLayer buildings=new FillExtrusionLayer("vag-buildings-3d",sourceId);
+   buildings.setSourceLayer("building");
+   buildings.setMinZoom(14.5f);
    buildings.setFilter(Expression.all(Expression.has("render_height"),Expression.has("render_min_height")));
-   buildings.setProperties(PropertyFactory.fillExtrusionColor("#26364B"),PropertyFactory.fillExtrusionHeight(Expression.get("render_height")),PropertyFactory.fillExtrusionBase(Expression.get("render_min_height")),PropertyFactory.fillExtrusionOpacity(0.92f),PropertyFactory.fillExtrusionVerticalGradient(true));
-   style.addLayer(buildings);updateStatus("MAPA 3D · EDIFICIOS VECTORIALES");
+   buildings.setProperties(
+    PropertyFactory.fillExtrusionColor("#26384F"),
+    PropertyFactory.fillExtrusionHeight(Expression.get("render_height")),
+    PropertyFactory.fillExtrusionBase(Expression.get("render_min_height")),
+    PropertyFactory.fillExtrusionOpacity(0.94f),
+    PropertyFactory.fillExtrusionVerticalGradient(true)
+   );
+   if(style.getLayer("road_label")!=null)style.addLayerBelow(buildings,"road_label");
+   else style.addLayer(buildings);
+   updateStatus("MAPA 3D · EDIFICIOS VECTORIALES");
   }catch(Exception e){updateStatus("MAPA OSCURO LISTO · 3D NO DISPONIBLE");}
  }
  private void buildSearchSurface(){
@@ -633,7 +645,7 @@ public class NavigationActivity extends Activity {
  private void updateVehiclePosition(Location loc){
   if(loc==null)return;currentLocation=new LatLng(loc.getLatitude(),loc.getLongitude());
   if(map!=null){if(locationMarker!=null)map.removeMarker(locationMarker);locationMarker=map.addMarker(new MarkerOptions().position(currentLocation).title("Vehículo · GPS"));
-   if(followGps)map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(map.getCameraPosition()).target(currentLocation).zoom(Math.max(15.2,map.getCameraPosition().zoom)).tilt(perspective3d?58:0).build()));}
+   if(followGps){CameraPosition previous=map.getCameraPosition();double heading=loc.hasBearing()&&loc.getSpeed()>1.5f?loc.getBearing():previous.bearing;map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(previous).target(currentLocation).zoom(Math.max(16.2,previous.zoom)).tilt(perspective3d?62:0).bearing(heading).build()));}}
   if(speedValue!=null)speedValue.setText(loc.hasSpeed()?String.valueOf(Math.round(loc.getSpeed()*3.6f)):"—");
  }
 
