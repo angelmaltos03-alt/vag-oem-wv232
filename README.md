@@ -26,7 +26,7 @@ Estas imágenes muestran vistas de referencia de las pantallas principales de VA
   <img src="docs/screenshots/sound-studio-preview.svg" alt="Vista previa de Sound Studio con perfiles de audio y ecualizador de diez bandas" width="900"/>
 </p>
 
-> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es una composición ilustrativa; el mapa real usa MapLibre con el estilo oscuro Dark de OpenFreeMap y edificios vectoriales 3D cuando la fuente contiene alturas y requiere conexión o paquetes offline compatibles. La ruta solo aparece después de calcularse con datos Valhalla disponibles.
+> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es una composición conceptual actualizada, no una captura real del mapa ni una ruta verificada; el mapa real usa MapLibre con el estilo oscuro Dark de OpenFreeMap y edificios vectoriales 3D cuando la fuente contiene alturas y requiere conexión o paquetes offline compatibles. La ruta solo aparece después de calcularse con datos Valhalla disponibles.
 
 ## Accesos configurables
 
@@ -139,8 +139,8 @@ La silueta roja de tres vistas se basa en la lámina del Polo proporcionada para
 - CANBUS de solo lectura pendiente.
 
 ## Builds
-- APK base automática: `VAG-OEM-WV232-0.13.0-BASE-debug-APK` (sin grafo precargado).
-- APK con grafo regional: `VAG-OEM-WV232-0.13.0-OFFLINE-APK` (flujo de construcción de datos).
+- APK base automática: `VAG-OEM-WV232-0.13.1-BASE-debug-APK` (sin grafo precargado).
+- APK con grafo regional: `VAG-OEM-WV232-0.13.1-LAGUNA-OFFLINE-APK` (flujo de construcción de datos).
 - JDK 21 (CI) · Gradle 8.11.1 · Android SDK 36.
 
 ## Validación
