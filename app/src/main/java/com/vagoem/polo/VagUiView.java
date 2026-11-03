@@ -185,8 +185,8 @@ public class VagUiView extends View {
  }
  private void settings(Canvas c){
   title(c,"Ajustes","Aplicaciones originales y configuración de VAG OEM");
-  String[] a={"Radio FM / AM","Reproductor de música","Teléfono / Bluetooth","App-Connect · CPLink","Navegación offline","CANBUS / Vehículo","Ajustes Android"};
-  String[] actions={"PICK_RADIO","PICK_MUSIC","PICK_PHONE","PICK_CARPLAY","PICK_NAV","PICK_CANBUS","ANDROID_SETTINGS"};
+  String[] a={"Radio FM / AM","Reproductor de música","Teléfono / Bluetooth","App-Connect · CPLink","Map Live · navegador original","CANBUS / Vehículo","Mapas VAG offline","Ajustes Android"};
+  String[] actions={"PICK_RADIO","PICK_MUSIC","PICK_PHONE","PICK_CARPLAY","PICK_NAV","PICK_CANBUS","OPEN_VAG_NAV","ANDROID_SETTINGS"};
   for(int i=0;i<a.length;i++){
    int col=i%2,row=i/2;float x=72+col*448,y=148+row*91;
    panel(c,x,y,420,72);
@@ -271,7 +271,7 @@ public class VagUiView extends View {
   }
   if("SETTINGS".equals(screen)&&y>=148&&y<450){
    int col=x<520?0:1;int row=Math.min(3,Math.max(0,(int)((y-148)/91)));
-   String[][] a={{"PICK_RADIO","PICK_MUSIC"},{"PICK_PHONE","PICK_CARPLAY"},{"PICK_NAV","PICK_CANBUS"},{"ANDROID_SETTINGS","ANDROID_SETTINGS"}};
+   String[][] a={{"PICK_RADIO","PICK_MUSIC"},{"PICK_PHONE","PICK_CARPLAY"},{"PICK_NAV","PICK_CANBUS"},{"OPEN_VAG_NAV","ANDROID_SETTINGS"}};
    act(a[row][col]);
   }
  }
