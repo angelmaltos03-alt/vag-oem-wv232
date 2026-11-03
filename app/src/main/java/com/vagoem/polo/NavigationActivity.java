@@ -33,6 +33,9 @@ import org.maplibre.android.geometry.LatLngBounds;
 import org.maplibre.android.maps.MapView;
 import org.maplibre.android.maps.MapLibreMap;
 import org.maplibre.android.maps.Style;
+import org.maplibre.android.style.expressions.Expression;
+import org.maplibre.android.style.layers.FillExtrusionLayer;
+import org.maplibre.android.style.layers.PropertyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +51,7 @@ import org.json.JSONObject;
  */
 public class NavigationActivity extends Activity {
  private static final int REQ_LOCATION=710;
- private static final String STYLE="https://tiles.openfreemap.org/styles/bright";
+ private static final String STYLE="https://tiles.openfreemap.org/styles/fiord";
  private static final int BG=0xF2141D27;
  private static final int BG_DARK=0xFF0B111A;
  private static final int BG_CARD=0xFF1C2631;
@@ -63,6 +66,9 @@ public class NavigationActivity extends Activity {
  private FrameLayout root;
  private LinearLayout bottomSheet;
  private TextView status, sheetTitle, sheetSubtitle;
+ private TextView maneuverTitle, maneuverDistance, speedValue;
+ private boolean perspective3d=true;
+ private int routeMinutes=0;
  private EditText search;
  private boolean styleReady=false;
  private boolean pendingRoute=false;
@@ -158,20 +164,26 @@ public class NavigationActivity extends Activity {
   root.addView(mapView,new FrameLayout.LayoutParams(-1,-1));
   mapView.onCreate(state);
 
+  buildTopBar();
+  buildLeftRail();
   buildSearchSurface();
+  buildManeuverBanner();
   buildMapControls();
   buildBottomSheet();
+  buildSpeedCard();
 
   setContentView(root);
 
   mapView.getMapAsync(m->{
    map=m;
-   map.setStyle(new Style.Builder().fromUri(STYLE),s->{
+   map.setStyle(new Style.Builder().fromUri(STYLE),style->{
     styleReady=true;
+    add3dBuildings(style);
     map.setCameraPosition(new CameraPosition.Builder()
-      .target(defaultCenter).zoom(12.4).tilt(0).build());
+      .target(defaultCenter).zoom(15.4).tilt(58).bearing(0).build());
     map.addOnMapClickListener(point->{setDestination(point,"Punto seleccionado");return true;});
-    updateStatus("MAPA LISTO  ·  LA LAGUNA");
+    updateStatus("MAPA 3D LISTO  ·  LA LAGUNA");
+    updateManeuverBanner();
     loadLocalAlerts();
     if(destination!=null)placeDestinationMarker();
     if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED||checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED)locate();
