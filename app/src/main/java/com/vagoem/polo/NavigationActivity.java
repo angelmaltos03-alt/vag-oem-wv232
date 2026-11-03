@@ -643,13 +643,16 @@ public class NavigationActivity extends Activity {
  }
 
  private void updateVehiclePosition(Location loc){
-  if(loc==null)return;currentLocation=new LatLng(loc.getLatitude(),loc.getLongitude());
+  if(loc==null)return;
+  GpsTelemetryEngine.record(this,loc);
+  currentLocation=new LatLng(loc.getLatitude(),loc.getLongitude());
   if(map!=null){if(locationMarker!=null)map.removeMarker(locationMarker);locationMarker=map.addMarker(new MarkerOptions().position(currentLocation).title("Vehículo · GPS"));
    if(followGps){CameraPosition previous=map.getCameraPosition();double heading=loc.hasBearing()&&loc.getSpeed()>1.5f?loc.getBearing():previous.bearing;map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(previous).target(currentLocation).zoom(Math.max(16.2,previous.zoom)).tilt(perspective3d?62:0).bearing(heading).build()));}}
   if(speedValue!=null)speedValue.setText(loc.hasSpeed()?String.valueOf(Math.round(loc.getSpeed()*3.6f)):"—");
  }
 
  private void startGpsTracking(){
+  GpsTelemetryEngine.start(this);
   if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED)return;
   try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);
    if(gpsListener==null)gpsListener=new LocationListener(){@Override public void onLocationChanged(Location location){updateVehiclePosition(location);}@Override public void onStatusChanged(String provider,int status,Bundle extras){}@Override public void onProviderEnabled(String provider){}@Override public void onProviderDisabled(String provider){}};
@@ -658,7 +661,10 @@ public class NavigationActivity extends Activity {
   }catch(Exception e){updateStatus("GPS NO DISPONIBLE · "+safeMessage(e));}
  }
 
- private void stopGpsTracking(){try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);if(gpsListener!=null)lm.removeUpdates(gpsListener);}catch(Exception ignored){}}
+ private void stopGpsTracking(){
+  try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);if(gpsListener!=null)lm.removeUpdates(gpsListener);}catch(Exception ignored){}
+  GpsTelemetryEngine.stop(this);
+ }
  private void reportAlert(){
   Location loc=latestLocation();
   if(loc==null){
