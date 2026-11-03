@@ -21,6 +21,7 @@ import org.maplibre.android.maps.MapView;
 import org.maplibre.android.maps.MapLibreMap;
 import org.maplibre.android.maps.Style;
 import org.maplibre.android.annotations.MarkerOptions;
+import org.maplibre.android.annotations.PolylineOptions;
 import java.util.List;
 import java.util.Locale;
 
