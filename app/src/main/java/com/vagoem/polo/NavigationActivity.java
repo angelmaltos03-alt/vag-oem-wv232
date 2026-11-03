@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Intent;
 import android.widget.*;
 
 import org.maplibre.android.MapLibre;
@@ -325,11 +326,11 @@ public class NavigationActivity extends Activity {
    LinearLayout metrics=new LinearLayout(this);
    metrics.setOrientation(LinearLayout.HORIZONTAL);
    metrics.setGravity(Gravity.CENTER_VERTICAL);
-   TextView distance=metricBox(routeDistance,"DISTANCIA");
+   View distance=metricBox(routeDistance,"DISTANCIA");
    metrics.addView(distance,new LinearLayout.LayoutParams(0,dp(47),1));
    View divider=new View(this);divider.setBackgroundColor(0x553D4855);
    metrics.addView(divider,new LinearLayout.LayoutParams(dp(1),dp(30)));
-   TextView duration=metricBox(routeDuration,"TIEMPO ESTIMADO");
+   View duration=metricBox(routeDuration,"TIEMPO ESTIMADO");
    metrics.addView(duration,new LinearLayout.LayoutParams(0,dp(47),1));
    bottomSheet.addView(metrics);
    if(!nextInstruction.isEmpty()){
