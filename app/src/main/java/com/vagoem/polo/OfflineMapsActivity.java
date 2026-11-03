@@ -128,7 +128,7 @@ public class OfflineMapsActivity extends Activity {
     byte[] buffer=new byte[1024*1024];int n;while((n=in.read(buffer))!=-1){copied+=n;if(copied>2L*1024L*1024L*1024L)throw new IllegalStateException("El paquete supera el límite de 2 GB.");out.write(buffer,0,n);}out.flush();
     if(copied<1024L*1024L)throw new IllegalStateException("El archivo es demasiado pequeño para un extracto Valhalla.");
     runOnUiThread(()->{status.setText(String.format(Locale.US,"Paquete de rutas importado · %.1f MB. Valhalla está listo para abrir la red vial.",copied/1048576.0));refreshStorage();});
-   }catch(Exception e){target.delete();runOnUiThread(()->status.setText("No se pudo importar el paquete: "+e.getMessage()));}
+   }catch(Exception e){temp.delete();runOnUiThread(()->status.setText("No se pudo importar el paquete: "+e.getMessage()));}
   },"VAG-RoutePack-Import").start();
  }
  private void listRegions(){
