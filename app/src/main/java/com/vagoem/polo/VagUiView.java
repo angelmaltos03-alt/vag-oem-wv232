@@ -152,7 +152,8 @@ public class VagUiView extends View {
    int col=i%2,row=i/2;float x=506+col*239,y=201+row*101;
    metric(c,x,y,224,91,labels[i],units[i]);
   }
-  txt(c,"CANBUS SIN CONEXIÓN  ·  LECTURAS REALES PENDIENTES DEL DECODIFICADOR",741,540,8,0xFFE58B96,true,Paint.Align.CENTER);
+  txt(c,"CANBUS SIN CONEXIÓN  ·  LECTURAS PENDIENTES",690,540,8,0xFFE58B96,true,Paint.Align.CENTER);
+  txt(c,"APP CANBUS  ›",951,540,8,RED,true,Paint.Align.RIGHT);
  }
  private RectF fit(Bitmap b,float x,float y,float w,float h){
   float scale=Math.min(w/b.getWidth(),h/b.getHeight());float dw=b.getWidth()*scale,dh=b.getHeight()*scale;
@@ -240,6 +241,7 @@ public class VagUiView extends View {
   if("VEHICLE".equals(screen)||"TRIP".equals(screen)){
    if(y>=145&&y<=184){vehicleTab=Math.max(0,Math.min(3,(int)(x/256)));screen="VEHICLE";invalidate();return;}
    if(x<75&&y<145){act("HOME");return;}
+   if(y>=523&&y<559&&x>=850){act("OPEN_CANBUS");return;}
    return;
   }
   if("PHONE".equals(screen)){

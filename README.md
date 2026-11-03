@@ -28,6 +28,26 @@ Estas imágenes muestran vistas de referencia de las pantallas principales de VA
 
 > Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es ilustrativa; la cartografía real depende de la carga del estilo y de los paquetes offline instalados.
 
+## Accesos configurables
+
+Mantén presionado durante aproximadamente **0.6 segundos** un acceso del launcher para elegir la aplicación que debe abrir. La selección se guarda de forma local y no sustituye ni desinstala la aplicación original del equipo.
+
+- Radio, Música, Teléfono y App-Connect: asignan la app correspondiente.
+- Navegación: permite elegir un navegador externo; cuando no hay uno asignado, abre VAG Navigation.
+- Vehículo: mantiene el tablero VAG Vehicle; desde el aviso inferior **APP CANBUS** se abre la aplicación CANBUS vinculada.
+- Ajustes: permite elegir los ajustes OEM del fabricante.
+- Sonido: permite elegir una aplicación DSP externa; si no se configura, abre VAG Sound Studio.
+
+Para restablecer una asignación, vuelve a mantener presionado el acceso y selecciona la aplicación deseada. Los vínculos se guardan en preferencias locales.
+
+## Inspiración y créditos
+
+Se agradece a **Elías Salvatierra** por compartir el proyecto [InterfazRanger](https://github.com/eliassalvatierra/InterfazRanger). Su trabajo sirvió como referencia para evaluar patrones útiles de launcher automotriz, especialmente la personalización de accesos mediante pulsación prolongada, la integración de aplicaciones y la atención al consumo de recursos.
+
+VAG OEM implementa estas ideas de forma independiente en Java y conserva su propia interfaz, recursos gráficos y arquitectura. **No se copiaron código fuente, imágenes ni protocolos del proyecto original.** El repositorio de referencia no declara una licencia de reutilización, por lo que se utiliza como inspiración y se acredita al autor, no como código incorporado.
+
+También se identificaron como posibles mejoras futuras la tarjeta multimedia con metadatos y carátula, y el control de las tareas al pasar a segundo plano. Su integración queda sujeta a comprobar el soporte real de las aplicaciones del WV232. El protocolo de radio NWD descrito en InterfazRanger no se reutiliza: depende de paquetes y hardware específicos que no están confirmados en el WV232.
+
 ## Módulos
 - VAG Home: launcher OEM horizontal.
 - VAG Navigation: MapLibre Native 13.6.1.
