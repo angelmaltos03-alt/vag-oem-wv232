@@ -19,6 +19,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VAG-OEM-Durango-Coahuila-Valhalla-Tiles
-          path: \${{ runner.temp }}/vag-route-data/valhalla_tiles.tar
+          path: ${{ runner.temp }}/vag-route-data/valhalla_tiles.tar
           if-no-files-found: error
           retention-days: 30
