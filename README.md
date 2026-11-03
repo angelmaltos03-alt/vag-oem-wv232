@@ -26,7 +26,7 @@ Estas imágenes muestran vistas de referencia de las pantallas principales de VA
   <img src="docs/screenshots/sound-studio-preview.svg" alt="Vista previa de Sound Studio con perfiles de audio y ecualizador de diez bandas" width="900"/>
 </p>
 
-> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es ilustrativa; la cartografía real depende de la carga del estilo y de los paquetes offline instalados.
+> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es una composición ilustrativa; el mapa real usa MapLibre con el estilo Bright de OpenFreeMap y requiere conexión o paquetes offline compatibles. La ruta solo aparece después de calcularse con datos Valhalla disponibles.
 
 ## Accesos configurables
 
@@ -73,7 +73,7 @@ El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.11.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
 
 ### Mapas visuales
-MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Liberty de OpenFreeMap. El administrador ofrece:
+MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Bright de OpenFreeMap, con una cartografía más contrastada, jerarquía vial, etiquetas y puntos de interés. La interfaz incluye búsqueda superior, controles flotantes de GPS/3D/capas y una hoja inferior para destino y ruta. El administrador ofrece:
 - Durango estatal (vista general).
 - Coahuila estatal (vista general).
 - La Laguna (detalle urbano).

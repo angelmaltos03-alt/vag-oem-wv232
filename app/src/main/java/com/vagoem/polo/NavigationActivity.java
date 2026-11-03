@@ -47,7 +47,7 @@ import org.json.JSONObject;
  */
 public class NavigationActivity extends Activity {
  private static final int REQ_LOCATION=710;
- private static final String STYLE="https://tiles.openfreemap.org/styles/liberty";
+ private static final String STYLE="https://tiles.openfreemap.org/styles/bright";
  private static final int BG=0xF2141D27;
  private static final int BG_DARK=0xFF0B111A;
  private static final int BG_CARD=0xFF1C2631;
@@ -168,10 +168,12 @@ public class NavigationActivity extends Activity {
    map.setStyle(new Style.Builder().fromUri(STYLE),s->{
     styleReady=true;
     map.setCameraPosition(new CameraPosition.Builder()
-      .target(defaultCenter).zoom(11.1).build());
+      .target(defaultCenter).zoom(12.4).tilt(0).build());
+    map.setOnMapClickListener(point->{setDestination(point,"Punto seleccionado");return true;});
     updateStatus("MAPA LISTO  ·  LA LAGUNA");
     loadLocalAlerts();
     if(destination!=null)placeDestinationMarker();
+    if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED||checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED)locate();
    });
   });
  }
@@ -244,7 +246,7 @@ public class NavigationActivity extends Activity {
   controls.setGravity(Gravity.CENTER);
   controls.setElevation(dp(4));
 
-  TextView locate=floating("◎",this::locate);
+  TextView locate=floating("GPS",this::locate); locate.setTextSize(10);
   controls.addView(locate,new LinearLayout.LayoutParams(dp(46),dp(46)));
   addControlGap(controls,8);
 
@@ -253,7 +255,7 @@ public class NavigationActivity extends Activity {
   controls.addView(tilt,new LinearLayout.LayoutParams(dp(46),dp(46)));
   addControlGap(controls,8);
 
-  TextView layers=floating("☷",this::showLayers);
+  TextView layers=floating("CAPAS",this::showLayers); layers.setTextSize(8);
   controls.addView(layers,new LinearLayout.LayoutParams(dp(46),dp(46)));
 
   FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(46),-2,Gravity.RIGHT|Gravity.TOP);
@@ -652,7 +654,7 @@ public class NavigationActivity extends Activity {
      CameraPosition c=map.getCameraPosition();
      map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(c).tilt(0).build()),350);
     }else if(w==3)startActivity(new Intent(this,OfflineMapsActivity.class));
-    else updateStatus("ESTILO LIBERTY · OPENFREEMAP");
+    else updateStatus("ESTILO BRIGHT · OPENFREEMAP");
    }).show();
  }
 

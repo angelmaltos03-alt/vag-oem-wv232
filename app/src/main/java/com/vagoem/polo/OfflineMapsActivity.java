@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class OfflineMapsActivity extends Activity {
- private static final String STYLE="https://tiles.openfreemap.org/styles/liberty";
+ private static final String STYLE="https://tiles.openfreemap.org/styles/bright";
  private static final long TILE_LIMIT=3000L;
  private static final long BYTE_LIMIT=50L*1024L*1024L;
  private LinearLayout root,installedList;
