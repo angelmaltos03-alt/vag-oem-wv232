@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
   case "OPEN_PHONE":openDialer();break;
   case "OPEN_CALL_LOG":openCallLog();break;
   case "OPEN_CONTACTS":case "OPEN_FAVORITES":openContacts();break;
-  case "OPEN_CANBUS":launchTarget("CANBUS","CANBUS");break;
+  case "OPEN_CANBUS":if(!launchSavedTarget("CANBUS","CANBUS"))pick("CANBUS","Selecciona la aplicación original CANBUS / Hiworld");break;
   case "RESET_GPS_TRIP":new AlertDialog.Builder(this).setTitle("Reiniciar viaje GPS").setMessage("Se reiniciarán distancia, tiempo y velocidades promedio/máxima del viaje guardado.").setNegativeButton("Cancelar",null).setPositiveButton("Reiniciar",(d,w)->{GpsTelemetryEngine.resetTrip(this);refreshGpsUi();toast("Viaje GPS reiniciado.");}).show();break;
   case "OPEN_GPS_DIAGNOSTICS":showGpsDiagnostics();break;
   case "SOUND":case "OPEN_SOUND":if(!launchSavedTarget("DSP","DSP / sonido"))startActivity(new Intent(this,SoundStudioActivity.class));break;
