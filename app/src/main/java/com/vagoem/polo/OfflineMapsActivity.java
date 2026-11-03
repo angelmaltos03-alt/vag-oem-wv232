@@ -5,6 +5,11 @@ import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StatFs;
+import android.content.Intent;
+import android.net.Uri;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import android.view.View;
 import android.widget.*;
 import org.json.JSONObject;
@@ -26,7 +31,7 @@ public class OfflineMapsActivity extends Activity {
  private TextView status,storage;
  private ProgressBar progress;
  private OfflineManager manager;
- private boolean downloading=false;
+ private boolean downloading=false;\n private static final int REQUEST_ROUTE_TILES=811;
  private static final class Pack {
   final String id,name,description;final double south,west,north,east,min,max;
   Pack(String i,String n,String d,double s,double w,double no,double e,double mi,double ma){id=i;name=n;description=d;south=s;west=w;north=no;east=e;min=mi;max=ma;}
@@ -62,7 +67,7 @@ public class OfflineMapsActivity extends Activity {
   }
   root.addView(label("MAPAS INSTALADOS",16,Color.WHITE,true));
   installedList=new LinearLayout(this);installedList.setOrientation(1);card(installedList);
-  button("ACTUALIZAR LISTA",this::listRegions);
+  button("IMPORTAR PAQUETE DE RUTAS VALHALLA (.TAR)",this::pickRouteTiles);\n  button("ACTUALIZAR LISTA",this::listRegions);
   button("VOLVER A NAVEGACIÓN",this::finish);
   card(label("El motor y el administrador están dentro de VAG OEM. Los datos cartográficos se descargan desde esta pantalla y se guardan en la base offline de MapLibre. La descarga inicial requiere conexión. OpenFreeMap permite cada descarga de hasta 3,000 teselas o 50 MB, con máximo 4 solicitudes simultáneas y User-Agent identificable. La app identifica sus solicitudes, limita a 4 conexiones simultáneas y pausa al alcanzar 3,000 teselas o 50 MB. El tamaño se comprueba durante la descarga; puede existir una pequeña variación por respuestas que ya estaban en tránsito.",11,0xFFFFC4C4,false));
   card(label("Atribución: OpenFreeMap © OpenMapTiles · Datos de OpenStreetMap (ODbL).",10,0xFFD7DEE8,false));
@@ -107,6 +112,23 @@ public class OfflineMapsActivity extends Activity {
     @Override public void onError(String error){downloading=false;status.setText("No se pudo crear el paquete: "+error);}
    });
   }catch(Exception e){downloading=false;status.setText("No se pudo preparar la descarga: "+e.toString());}
+ }
+ private void pickRouteTiles(){
+  Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("*/*");startActivityForResult(i,REQUEST_ROUTE_TILES);
+ }
+ @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
+  super.onActivityResult(requestCode,resultCode,data);
+  if(requestCode!=REQUEST_ROUTE_TILES||resultCode!=RESULT_OK||data==null||data.getData()==null)return;
+  Uri uri=data.getData();status.setText("Importando paquete de red vial…");
+  new Thread(()->{
+   File target=new File(getFilesDir(),"vag_valhalla_tiles.tar");long copied=0;
+   try(InputStream in=getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(target)){
+    if(in==null)throw new IllegalStateException("No se pudo abrir el archivo seleccionado.");
+    byte[] buffer=new byte[1024*1024];int n;while((n=in.read(buffer))!=-1){copied+=n;if(copied>2L*1024L*1024L*1024L)throw new IllegalStateException("El paquete supera el límite de 2 GB.");out.write(buffer,0,n);}out.flush();
+    if(copied<1024L*1024L)throw new IllegalStateException("El archivo es demasiado pequeño para un extracto Valhalla.");
+    runOnUiThread(()->{status.setText(String.format(Locale.US,"Paquete de rutas importado · %.1f MB. Valhalla está listo para abrir la red vial.",copied/1048576.0));refreshStorage();});
+   }catch(Exception e){target.delete();runOnUiThread(()->status.setText("No se pudo importar el paquete: "+e.getMessage()));}
+  },"VAG-RoutePack-Import").start();
  }
  private void listRegions(){
   if(installedList==null)return;installedList.removeAllViews();
