@@ -669,9 +669,13 @@ public class NavigationActivity extends Activity {
 
  @Override public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grants){
   super.onRequestPermissionsResult(requestCode,permissions,grants);
-  if(requestCode==REQ_LOCATION&&grants.length>0&&grants[0]==PackageManager.PERMISSION_GRANTED){
-   if(pendingRoute)calculateRoute(latestLocation());
-   else locate();
+  boolean granted=false;
+  for(int value:grants)if(value==PackageManager.PERMISSION_GRANTED)granted=true;
+  if(requestCode==REQ_LOCATION&&granted){
+   if(pendingRoute){
+    Location loc=latestLocation();
+    if(loc!=null)calculateRoute(loc);else updateStatus("GPS AÚN NO DISPONIBLE · INTENTA DE NUEVO");
+   }else locate();
   }else{
    pendingRoute=false;
    updateStatus("PERMISO GPS NO CONCEDIDO");
