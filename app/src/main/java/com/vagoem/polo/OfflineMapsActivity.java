@@ -68,7 +68,8 @@ public class OfflineMapsActivity extends Activity {
   }
   root.addView(label("MAPAS INSTALADOS",16,Color.WHITE,true));
   installedList=new LinearLayout(this);installedList.setOrientation(1);card(installedList);
-  button("IMPORTAR PAQUETE DE RUTAS VALHALLA (.TAR)",this::pickRouteTiles);\n  button("ACTUALIZAR LISTA",this::listRegions);
+  button("IMPORTAR PAQUETE DE RUTAS VALHALLA (.TAR)",this::pickRouteTiles);
+  button("ACTUALIZAR LISTA",this::listRegions);
   button("VOLVER A NAVEGACIÓN",this::finish);
   card(label("El motor y el administrador están dentro de VAG OEM. Los datos cartográficos se descargan desde esta pantalla y se guardan en la base offline de MapLibre. La descarga inicial requiere conexión. OpenFreeMap permite cada descarga de hasta 3,000 teselas o 50 MB, con máximo 4 solicitudes simultáneas y User-Agent identificable. La app identifica sus solicitudes, limita a 4 conexiones simultáneas y pausa al alcanzar 3,000 teselas o 50 MB. El tamaño se comprueba durante la descarga; puede existir una pequeña variación por respuestas que ya estaban en tránsito.",11,0xFFFFC4C4,false));
   card(label("Atribución: OpenFreeMap © OpenMapTiles · Datos de OpenStreetMap (ODbL).",10,0xFFD7DEE8,false));
