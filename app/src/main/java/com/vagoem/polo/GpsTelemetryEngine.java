@@ -84,10 +84,11 @@ public final class GpsTelemetryEngine {
   float average=duration>0?(float)(distance/1000d/(duration/3600d)):0f;
   SharedPreferences.Editor e=p.edit().putFloat(TRIP+"distance_m",(float)distance)
    .putFloat(TRIP+"max_speed",max).putFloat(TRIP+"avg_speed",average)
-   .putLong(TRIP+"start_time",first).putLong("last_time",location.getTime())
-   .putLong("last_lat",Double.doubleToLongBits(location.getLatitude()))
-   .putLong("last_lon",Double.doubleToLongBits(location.getLongitude()))
+   .putLong(TRIP+"start_time",first)
    .putFloat("last_accuracy",accuracy).putLong("last_fix_time",location.getTime());
+  if(reliable)e.putLong("last_time",location.getTime())
+   .putLong("last_lat",Double.doubleToLongBits(location.getLatitude()))
+   .putLong("last_lon",Double.doubleToLongBits(location.getLongitude()));
   if(location.hasAltitude())e.putFloat("last_altitude",(float)location.getAltitude());
   if(Float.isFinite(speed))e.putFloat("last_speed",speed);
   if(location.hasBearing())e.putFloat("last_bearing",location.getBearing());
@@ -96,11 +97,26 @@ public final class GpsTelemetryEngine {
 
  public static synchronized Snapshot read(Context context,Location location){
   SharedPreferences p=context.getApplicationContext().getSharedPreferences(PREF,Context.MODE_PRIVATE);
-  return new Snapshot(location,p.getFloat("last_altitude",Float.NaN),p.getFloat("last_accuracy",Float.NaN),
+  Location last=location;
+  if(last==null){
+   double lat=Double.longBitsToDouble(p.getLong("last_lat",Double.doubleToLongBits(Double.NaN)));
+   double lon=Double.longBitsToDouble(p.getLong("last_lon",Double.doubleToLongBits(Double.NaN)));
+   if(Double.isFinite(lat)&&Double.isFinite(lon)){
+    last=new Location("saved-gps");last.setLatitude(lat);last.setLongitude(lon);
+    last.setTime(p.getLong("last_fix_time",0L));
+   }
+  }
+  return new Snapshot(last,p.getFloat("last_altitude",Float.NaN),p.getFloat("last_accuracy",Float.NaN),
    p.getFloat("last_speed",Float.NaN),p.getFloat("last_bearing",Float.NaN),
    p.getFloat(TRIP+"distance_m",0f)/1000f,p.getFloat(TRIP+"max_speed",0f),
    p.getFloat(TRIP+"avg_speed",0f),p.getLong(TRIP+"start_time",0L),
+   p.getLong(TRIP+"start_time",0L)>0?p.getLong("last_fix_time",0L)-p.getLong(TRIP+"start_time",0L):0L,
    satellitesVisible,satellitesUsed,constellationSummary);
+ }
+
+ public static synchronized void resetTrip(Context context){
+  SharedPreferences p=context.getApplicationContext().getSharedPreferences(PREF,Context.MODE_PRIVATE);
+  p.edit().remove(TRIP+"distance_m").remove(TRIP+"max_speed").remove(TRIP+"avg_speed").remove(TRIP+"start_time").apply();
  }
 
  public static final class Snapshot{
@@ -108,13 +124,14 @@ public final class GpsTelemetryEngine {
   public final float altitudeMeters,accuracyMeters,speedKmh,bearingDegrees;
   public final double tripKm;
   public final float maxSpeedKmh,averageSpeedKmh;
-  public final long tripStartTime;
+  public final long tripStartTime,tripDurationMs,fixTime;
   public final int satellitesVisible,satellitesUsed;
   public final String constellations;
-  Snapshot(Location l,float altitude,float accuracy,float speed,float bearing,double km,float max,float avg,long start,int visible,int used,String systems){
+  Snapshot(Location l,float altitude,float accuracy,float speed,float bearing,double km,float max,float avg,long start,long duration,int visible,int used,String systems){
    latitude=l==null?Double.NaN:l.getLatitude();longitude=l==null?Double.NaN:l.getLongitude();
    altitudeMeters=altitude;accuracyMeters=accuracy;speedKmh=speed;bearingDegrees=bearing;
-   tripKm=km;maxSpeedKmh=max;averageSpeedKmh=avg;tripStartTime=start;
+   tripKm=km;maxSpeedKmh=max;averageSpeedKmh=avg;tripStartTime=start;tripDurationMs=Math.max(0L,duration);
+   fixTime=l==null?0L:l.getTime();
    satellitesVisible=visible;satellitesUsed=used;constellations=systems;
   }
   public String summary(){
