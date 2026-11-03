@@ -39,7 +39,10 @@ public class NavigationActivity extends Activity {
   super.onCreate(state);getWindow().getDecorView().setSystemUiVisibility(5894|1024|512);
   MapLibre.getInstance(this); routeEngine=new OfflineRoutingEngine(this); build(state);
  }
- private void styleButton(Button b,boolean primary){\n  float d=getResources().getDisplayMetrics().density;GradientDrawable bg=new GradientDrawable();bg.setColor(primary?0xFF351820:0xFF1B2632);bg.setCornerRadius(7*d);bg.setStroke(Math.max(1,(int)d),primary?0xFFB94A5B:0xFF465564);b.setBackground(bg);b.setTextColor(Color.WHITE);b.setTextSize(10);b.setAllCaps(false);b.setPadding(7,3,7,3);\n }\n private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);if(bold)t.setTypeface(null,1);return t;}
+ private void styleButton(Button b,boolean primary){
+  float d=getResources().getDisplayMetrics().density;GradientDrawable bg=new GradientDrawable();bg.setColor(primary?0xFF351820:0xFF1B2632);bg.setCornerRadius(7*d);bg.setStroke(Math.max(1,(int)d),primary?0xFFB94A5B:0xFF465564);b.setBackground(bg);b.setTextColor(Color.WHITE);b.setTextSize(10);b.setAllCaps(false);b.setPadding(7,3,7,3);
+ }
+ private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);if(bold)t.setTypeface(null,1);return t;}
  private void build(Bundle state){
   FrameLayout frame=new FrameLayout(this);frame.setBackgroundColor(0xFF080D15);
   mapView=new MapView(this);frame.addView(mapView,new FrameLayout.LayoutParams(-1,-1));mapView.onCreate(state);
@@ -86,7 +89,8 @@ public class NavigationActivity extends Activity {
   }).setNegativeButton("Cancelar",null).show();
  }
  private void showAlerts(){java.util.List<LocalAlertStore.Alert> items=LocalAlertStore.all(this);if(items.isEmpty()){new AlertDialog.Builder(this).setTitle("Alertas guardadas").setMessage("Todavía no hay alertas locales. Puedes reportar un peligro desde tu ubicación GPS.").setPositiveButton("OK",null).show();return;}
-  String[] lines=new String[items.size()];for(int i=0;i<items.size();i++){LocalAlertStore.Alert a=items.get(i);lines[i]=a.type+" · "+String.format(Locale.US,"%.5f, %.5f",a.lat,a.lon)+(a.note.isEmpty()?"":"\n"+a.note);}
+  String[] lines=new String[items.size()];for(int i=0;i<items.size();i++){LocalAlertStore.Alert a=items.get(i);lines[i]=a.type+" · "+String.format(Locale.US,"%.5f, %.5f",a.lat,a.lon)+(a.note.isEmpty()?"":"
+"+a.note);}
   new AlertDialog.Builder(this).setTitle("Alertas guardadas en este equipo").setItems(lines,(d,w)->{LocalAlertStore.Alert a=items.get(w);if(map!=null)map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(new LatLng(a.lat,a.lon),16));}).setPositiveButton("Cerrar",null).show();
  }
  private void searchDestination(){

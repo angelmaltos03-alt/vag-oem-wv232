@@ -232,7 +232,7 @@ public class VagUiView extends View {
   }
   if("PHONE".equals(screen)){
    if(x<75&&y<145){act("HOME");return;}
-   if(y>=200&&y<463){int col=x<512?0:1,row=y<345?0:1;String[] a={"OPEN_PHONE","OPEN_CONTACTS","OPEN_CALL_LOG","OPEN_FAVORITES"};act(a[row*2+col]);}
+   if(y>=200&&y<463){int col=x<512?0:1,row=y<345?0:1;String[] a={"OPEN_PHONE","OPEN_CALL_LOG","OPEN_CONTACTS","OPEN_FAVORITES"};act(a[row*2+col]);}
    return;
   }
   if(x<75&&y<145){act("HOME");return;}
@@ -245,7 +245,7 @@ public class VagUiView extends View {
   }
   if("SETTINGS".equals(screen)&&y>=148&&y<450){
    int col=x<520?0:1;int row=Math.min(3,Math.max(0,(int)((y-148)/91)));
-   String[][] a={{"PICK_RADIO","PICK_PHONE"},{"PICK_MUSIC","PICK_CARPLAY"},{"PICK_NAV","PICK_CANBUS"},{"ANDROID_SETTINGS","ANDROID_SETTINGS"}};
+   String[][] a={{"PICK_RADIO","PICK_MUSIC"},{"PICK_PHONE","PICK_CARPLAY"},{"PICK_NAV","PICK_CANBUS"},{"ANDROID_SETTINGS","ANDROID_SETTINGS"}};
    act(a[row][col]);
   }
  }
