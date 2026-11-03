@@ -53,11 +53,35 @@ public class NavigationActivity extends Activity {
   Button tilt=new Button(this);tilt.setText("VISTA 3D");actions.addView(tilt,new LinearLayout.LayoutParams(0,48,1));tilt.setOnClickListener(v->toggle3d());
   Button layers=new Button(this);layers.setText("CAPAS");actions.addView(layers,new LinearLayout.LayoutParams(0,48,1));layers.setOnClickListener(v->showLayers());
   bottom.addView(actions);
+  LinearLayout extra=new LinearLayout(this);extra.setOrientation(LinearLayout.HORIZONTAL);
+  Button offline=new Button(this);offline.setText("MAPAS OFFLINE");extra.addView(offline,new LinearLayout.LayoutParams(0,44,1));offline.setOnClickListener(v->startActivity(new android.content.Intent(this,OfflineMapsActivity.class)));
+  Button report=new Button(this);report.setText("REPORTAR");extra.addView(report,new LinearLayout.LayoutParams(0,44,1));report.setOnClickListener(v->reportAlert());
+  Button alerts=new Button(this);alerts.setText("ALERTAS");extra.addView(alerts,new LinearLayout.LayoutParams(0,44,1));alerts.setOnClickListener(v->showAlerts());
+  bottom.addView(extra);
   TextView attribution=text("© OpenStreetMap contributors · OpenFreeMap",9,0xFFB8C3D0,false);attribution.setGravity(Gravity.CENTER);bottom.addView(attribution);
   FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-1,-2,Gravity.BOTTOM);bp.setMargins(12,0,12,12);frame.addView(bottom,bp);
   Button back=new Button(this);back.setText("‹");back.setTextSize(24);FrameLayout.LayoutParams backp=new FrameLayout.LayoutParams(54,54,Gravity.TOP|Gravity.LEFT);backp.setMargins(18,100,0,0);frame.addView(back,backp);back.setOnClickListener(v->finish());
   setContentView(frame);
-  mapView.getMapAsync(m->{map=m;map.setStyle(new Style.Builder().fromUri(STYLE),s->{styleReady=true;map.setCameraPosition(new CameraPosition.Builder().target(defaultCenter).zoom(8.4).build());status.setText("Mapa listo · zona de La Laguna · conexión necesaria para cartografía inicial");});});
+  mapView.getMapAsync(m->{map=m;map.setStyle(new Style.Builder().fromUri(STYLE),s->{styleReady=true;map.setCameraPosition(new CameraPosition.Builder().target(defaultCenter).zoom(8.4).build());status.setText("Mapa listo · La Laguna · descarga paquetes offline y guarda alertas locales");loadLocalAlerts();});});
+ }
+ private void loadLocalAlerts(){if(map==null)return;for(LocalAlertStore.Alert a:LocalAlertStore.all(this)){map.addMarker(new MarkerOptions().position(new LatLng(a.lat,a.lon)).title("ALERTA · "+a.type).snippet(a.note));}}
+ private void reportAlert(){
+  if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},REQ_LOCATION);status.setText("Concede ubicación y vuelve a pulsar REPORTAR.");return;}
+  LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);Location loc=null;try{for(String provider:lm.getProviders(true)){Location x=lm.getLastKnownLocation(provider);if(x!=null&&(loc==null||x.getTime()>loc.getTime()))loc=x;}}catch(SecurityException ignored){}
+  if(loc==null){status.setText("Aún no hay posición GPS. Pulsa MI UBICACIÓN y vuelve a reportar.");return;}
+  final Location here=loc;String[] types={"Peligro en carretera","Bache","Obra / cierre","Inundación","Accidente","Vehículo detenido","Retén / control","Otro"};
+  new AlertDialog.Builder(this).setTitle("Reportar incidencia en esta ubicación").setItems(types,(d,w)->{
+   EditText note=new EditText(this);note.setSingleLine(true);note.setHint("Nota opcional");
+   new AlertDialog.Builder(this).setTitle(types[w]).setView(note).setNegativeButton("Cancelar",null).setPositiveButton("Guardar",(dd,ww)->{
+    String n=note.getText().toString().trim();LocalAlertStore.add(this,types[w],n,here.getLatitude(),here.getLongitude());
+    if(map!=null)map.addMarker(new MarkerOptions().position(new LatLng(here.getLatitude(),here.getLongitude())).title("ALERTA · "+types[w]).snippet(n));
+    status.setText("Alerta guardada localmente en este estéreo. No se ha compartido con otros conductores.");
+   }).show();
+  }).setNegativeButton("Cancelar",null).show();
+ }
+ private void showAlerts(){java.util.List<LocalAlertStore.Alert> items=LocalAlertStore.all(this);if(items.isEmpty()){new AlertDialog.Builder(this).setTitle("Alertas guardadas").setMessage("Todavía no hay alertas locales. Puedes reportar un peligro desde tu ubicación GPS.").setPositiveButton("OK",null).show();return;}
+  String[] lines=new String[items.size()];for(int i=0;i<items.size();i++){LocalAlertStore.Alert a=items.get(i);lines[i]=a.type+" · "+String.format(Locale.US,"%.5f, %.5f",a.lat,a.lon)+(a.note.isEmpty()?"":"\n"+a.note);}
+  new AlertDialog.Builder(this).setTitle("Alertas guardadas en este equipo").setItems(lines,(d,w)->{LocalAlertStore.Alert a=items.get(w);if(map!=null)map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(new LatLng(a.lat,a.lon),16));}).setPositiveButton("Cerrar",null).show();
  }
  private void searchDestination(){
   String q=search.getText().toString().trim();if(q.isEmpty()){search.setError("Escribe un destino");return;}
