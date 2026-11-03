@@ -1,0 +1,24 @@
+name: Build offline routing data
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-route-graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OSM extract tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osmium-tool
+      - name: Build Durango and Coahuila Valhalla graph
+        run: bash tools/build-valhalla-region.sh "$RUNNER_TEMP/vag-route-data"
+      - name: Publish route graph package
+        uses: actions/upload-artifact@v4
+        with:
+          name: VAG-OEM-Durango-Coahuila-Valhalla-Tiles
+          path: \${{ runner.temp }}/vag-route-data/valhalla_tiles.tar
+          if-no-files-found: error
+          retention-days: 30
