@@ -27,6 +27,7 @@ public class VagUiView extends View {
  private final Bitmap poloSilhouette;
  private String screen="HOME";
  private int vehicleTab=0, pressedTile=-1;
+ private GpsTelemetryEngine.Snapshot gpsSnapshot;
  private long pressStartedAt=0L;
  private final SimpleDateFormat clock=new SimpleDateFormat("HH:mm",Locale.getDefault());
  private final SimpleDateFormat date=new SimpleDateFormat("EEE, dd MMM",Locale.getDefault());
@@ -39,6 +40,7 @@ public class VagUiView extends View {
  }
  public void setScreen(String s){screen=s==null?"HOME":s;pressedTile=-1;invalidate();}
  public String getScreen(){return screen;}
+ public void setGpsSnapshot(GpsTelemetryEngine.Snapshot snapshot){gpsSnapshot=snapshot;invalidate();}
 
  @Override protected void onDraw(Canvas c){
   super.onDraw(c);c.save();c.scale(getWidth()/(float)W,getHeight()/(float)H);
@@ -137,26 +139,15 @@ public class VagUiView extends View {
   }
   txt(c,vehicleTab==3?"MONITOR DE APERTURAS  ·  ESTADO EN ESPERA":"VOLKSWAGEN POLO 2020  ·  VISTAS DE REFERENCIA",254,497,8,0xFF8F9BA9,true,Paint.Align.CENTER);
   panel(c,493,191,496,329);
-  String[] labels,units;
-  if(vehicleTab==0){
-   labels=new String[]{"NIVEL DE GASOLINA","VOLUMEN ESTIMADO","AUTONOMÍA","CONSUMO ACTUAL","CONSUMO PROMEDIO","CONSUMO PROMEDIO"};
-   units=new String[]{"%","L","km","km/L","km/L","L/100 km"};
-  }else if(vehicleTab==1){
-   labels=new String[]{"DISTANCIA VIAJE A","DISTANCIA VIAJE B","TIEMPO DE VIAJE","VELOCIDAD PROMEDIO","VELOCIDAD MÁXIMA","COMBUSTIBLE USADO"};
-   units=new String[]{"km","km","h:min","km/h","km/h","L"};
-  }else if(vehicleTab==2){
-   labels=new String[]{"VELOCIDAD ACTUAL","RÉGIMEN DEL MOTOR","TEMP. REFRIGERANTE","CARGA DEL MOTOR","POSICIÓN ACELERADOR","VOLTAJE DE BATERÍA"};
-   units=new String[]{"km/h","rpm","°C","%","%","V"};
-  }else{
-   labels=new String[]{"PUERTA CONDUCTOR","PUERTA COPILOTO","TRASERA IZQUIERDA","TRASERA DERECHA","COFRE","CAJUELA"};
-   units=new String[]{"SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO"};
-  }
-  for(int i=0;i<6;i++){
-   int col=i%2,row=i/2;float x=506+col*239,y=201+row*101;
-   metric(c,x,y,224,91,labels[i],units[i]);
-  }
-  txt(c,vehicleTab==3?"SIN SEÑAL CANBUS  ·  NO SE CONFIRMA NINGUNA APERTURA":"CANBUS SIN CONEXIÓN  ·  LECTURAS PENDIENTES",690,540,8,0xFFE58B96,true,Paint.Align.CENTER);
-  txt(c,"APP CANBUS  ›",951,540,8,RED,true,Paint.Align.RIGHT);
+  String[] labels,values,units,sources;
+  if(vehicleTab==0){labels=new String[]{"VELOCIDAD GPS","ALTITUD GPS","PRECISIÓN GPS","SATÉLITES EN USO","SATÉLITES VISIBLES","RUMBO GPS"};values=gpsGeneralValues();units=new String[]{"km/h","m","m","unid.","unid.","°"};sources=new String[]{"GPS","GPS","GPS","GNSS","GNSS","GPS"};}
+  else if(vehicleTab==1){labels=new String[]{"DISTANCIA DEL VIAJE","TIEMPO TRANSCURRIDO","VELOCIDAD PROMEDIO","VELOCIDAD MÁXIMA","VELOCIDAD ACTUAL","PRECISIÓN DE POSICIÓN"};values=gpsTripValues();units=new String[]{"km","h:min","km/h","km/h","km/h","m"};sources=new String[]{"GPS · ESTIMADO","GPS · SESIÓN","GPS · ESTIMADO","GPS","GPS","GPS"};}
+  else if(vehicleTab==2){labels=new String[]{"VELOCIDAD GPS","RÉGIMEN DEL MOTOR","TEMP. REFRIGERANTE","CARGA DEL MOTOR","POSICIÓN ACELERADOR","VOLTAJE DE BATERÍA"};values=new String[]{gpsValue(gpsSnapshot==null?Float.NaN:gpsSnapshot.speedKmh,1),"—","—","—","—","—"};units=new String[]{"km/h","rpm","°C","%","%","V"};sources=new String[]{"GPS","CANBUS","CANBUS","CANBUS","CANBUS","CANBUS"};}
+  else{labels=new String[]{"PUERTA CONDUCTOR","PUERTA COPILOTO","TRASERA IZQUIERDA","TRASERA DERECHA","COFRE","CAJUELA"};values=new String[]{"—","—","—","—","—","—"};units=new String[]{"SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO"};sources=new String[]{"CANBUS","CANBUS","CANBUS","CANBUS","CANBUS","CANBUS"};}
+  for(int i=0;i<6;i++){int col=i%2,row=i/2;float x=506+col*239,y=201+row*101;metric(c,x,y,224,91,labels[i],values[i],units[i],sources[i]);}
+  String footer=vehicleTab==3?"SIN SEÑAL CANBUS · ESTADOS DESCONOCIDOS":vehicleTab==1?"DATOS GPS ESTIMADOS · TOCA PARA REINICIAR VIAJE":vehicleTab==0?"GNSS: "+(gpsSnapshot==null?"ESPERANDO DATOS":gpsSnapshot.constellations):"CANBUS SIN CONEXIÓN · DATOS NO DISPONIBLES";
+  txt(c,footer,690,540,8,0xFFE58B96,true,Paint.Align.CENTER);
+  txt(c,vehicleTab==1?"REINICIAR ›":vehicleTab==0?"GPS ›":"APP CANBUS ›",951,540,8,RED,true,Paint.Align.RIGHT);
  }
  private void drawDoorSchematic(Canvas c){
   // Esquema superior. Gris significa estado desconocido, nunca se presupone cerrado.
@@ -181,13 +172,10 @@ public class VagUiView extends View {
   float scale=Math.min(w/b.getWidth(),h/b.getHeight());float dw=b.getWidth()*scale,dh=b.getHeight()*scale;
   float left=x+(w-dw)/2f,top=y+(h-dh)/2f;return new RectF(left,top,left+dw,top+dh);
  }
- private void metric(Canvas c,float x,float y,float w,float h,String label,String unit){
-  panel(c,x,y,w,h);
-  txt(c,label,x+11,y+19,8,0xFFAEB9C5,true,Paint.Align.LEFT);
-  txt(c,"— —",x+11,y+55,23,WHITE,true,Paint.Align.LEFT);
-  txt(c,unit,x+w-11,y+54,9,0xFFE26A79,true,Paint.Align.RIGHT);
-  txt(c,"SIN LECTURA CANBUS",x+11,y+76,7,0xFF718091,false,Paint.Align.LEFT);
- }
+ private String gpsValue(float v,int d){return Float.isFinite(v)?String.format(Locale.US,d==0?"%.0f":"%.1f",v):"—";}
+ private String[] gpsGeneralValues(){if(gpsSnapshot==null)return new String[]{"—","—","—","—","—","—"};return new String[]{gpsValue(gpsSnapshot.speedKmh,0),gpsValue(gpsSnapshot.altitudeMeters,0),gpsValue(gpsSnapshot.accuracyMeters,0),gpsSnapshot.satellitesUsed<0?"—":String.valueOf(gpsSnapshot.satellitesUsed),gpsSnapshot.satellitesVisible<0?"—":String.valueOf(gpsSnapshot.satellitesVisible),gpsValue(gpsSnapshot.bearingDegrees,0)};}
+ private String[] gpsTripValues(){if(gpsSnapshot==null)return new String[]{"0.00","00:00","0.0","0","—","—"};long mins=gpsSnapshot.tripDurationMs/60000L;return new String[]{String.format(Locale.US,"%.2f",gpsSnapshot.tripKm),String.format(Locale.US,"%02d:%02d",mins/60,mins%60),gpsValue(gpsSnapshot.averageSpeedKmh,1),gpsValue(gpsSnapshot.maxSpeedKmh,0),gpsValue(gpsSnapshot.speedKmh,0),gpsValue(gpsSnapshot.accuracyMeters,0)};}
+ private void metric(Canvas c,float x,float y,float w,float h,String label,String value,String unit,String source){panel(c,x,y,w,h);txt(c,label,x+11,y+19,8,0xFFAEB9C5,true,Paint.Align.LEFT);txt(c,value,x+11,y+55,23,WHITE,true,Paint.Align.LEFT);txt(c,unit,x+w-11,y+54,9,0xFFE26A79,true,Paint.Align.RIGHT);txt(c,source,x+11,y+76,7,0xFF718091,false,Paint.Align.LEFT);}
  private void page(Canvas c,String title,String sub,String button,String action){
   title(c,title,sub);panel(c,82,149,860,355);
   txt(c,title.toUpperCase(Locale.ROOT),512,282,27,WHITE,true,Paint.Align.CENTER);
@@ -263,7 +251,7 @@ public class VagUiView extends View {
   if("VEHICLE".equals(screen)||"TRIP".equals(screen)){
    if(y>=145&&y<=184){vehicleTab=Math.max(0,Math.min(3,(int)(x/256)));screen="VEHICLE";invalidate();return;}
    if(x<75&&y<145){act("HOME");return;}
-   if(y>=523&&y<559&&x>=850){act("OPEN_CANBUS");return;}
+   if(y>=523&&y<559&&x>=850){act(vehicleTab==1?"RESET_GPS_TRIP":vehicleTab==0?"OPEN_GPS_DIAGNOSTICS":"OPEN_CANBUS");return;}
    return;
   }
   if("PHONE".equals(screen)){
