@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -24,6 +25,7 @@ import org.maplibre.android.annotations.MarkerOptions;
 import org.maplibre.android.annotations.PolylineOptions;
 import java.util.List;
 import java.util.Locale;
+import org.json.JSONObject;
 
 public class NavigationActivity extends Activity {
  private static final int REQ_LOCATION=710;
@@ -37,36 +39,36 @@ public class NavigationActivity extends Activity {
   super.onCreate(state);getWindow().getDecorView().setSystemUiVisibility(5894|1024|512);
   MapLibre.getInstance(this); routeEngine=new OfflineRoutingEngine(this); build(state);
  }
- private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);if(bold)t.setTypeface(null,1);return t;}
+ private void styleButton(Button b,boolean primary){\n  float d=getResources().getDisplayMetrics().density;GradientDrawable bg=new GradientDrawable();bg.setColor(primary?0xFF351820:0xFF1B2632);bg.setCornerRadius(7*d);bg.setStroke(Math.max(1,(int)d),primary?0xFFB94A5B:0xFF465564);b.setBackground(bg);b.setTextColor(Color.WHITE);b.setTextSize(10);b.setAllCaps(false);b.setPadding(7,3,7,3);\n }\n private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);if(bold)t.setTypeface(null,1);return t;}
  private void build(Bundle state){
   FrameLayout frame=new FrameLayout(this);frame.setBackgroundColor(0xFF080D15);
   mapView=new MapView(this);frame.addView(mapView,new FrameLayout.LayoutParams(-1,-1));mapView.onCreate(state);
-  LinearLayout top=new LinearLayout(this);top.setOrientation(LinearLayout.VERTICAL);top.setPadding(18,12,18,12);top.setBackgroundColor(0xEE101721);
-  TextView brand=text("VAG NAVIGATION   ·   POLO 2020",16,Color.WHITE,true);top.addView(brand);
+  LinearLayout top=new LinearLayout(this);top.setOrientation(LinearLayout.VERTICAL);top.setPadding(18,12,18,12);top.setBackgroundColor(0xF2141D27);
+  TextView brand=text("NAVEGACIÓN   ·   POLO 2020",16,Color.WHITE,true);top.addView(brand);
   status=text("Preparando cartografía…",11,0xFFB8C3D0,false);top.addView(status);
   FrameLayout.LayoutParams tp=new FrameLayout.LayoutParams(-1,-2,Gravity.TOP);tp.setMargins(14,12,14,0);frame.addView(top,tp);
-  LinearLayout bottom=new LinearLayout(this);bottom.setOrientation(LinearLayout.VERTICAL);bottom.setPadding(12,10,12,10);bottom.setBackgroundColor(0xEE101721);
+  LinearLayout bottom=new LinearLayout(this);bottom.setOrientation(LinearLayout.VERTICAL);bottom.setPadding(12,10,12,10);bottom.setBackgroundColor(0xF2141D27);
   LinearLayout row=new LinearLayout(this);row.setOrientation(LinearLayout.HORIZONTAL);
   search=new EditText(this);search.setSingleLine(true);search.setTextColor(Color.WHITE);search.setHintTextColor(0xFF9BA8B7);search.setHint("¿A dónde vamos?");search.setTextSize(14);search.setPadding(12,0,12,0);search.setBackgroundColor(0xFF26313D);
   row.addView(search,new LinearLayout.LayoutParams(0,48,1));
-  Button go=new Button(this);go.setText("BUSCAR");row.addView(go,new LinearLayout.LayoutParams(110,48));go.setOnClickListener(v->searchDestination());
+  Button go=new Button(this);go.setText("Buscar");styleButton(go,true);row.addView(go,new LinearLayout.LayoutParams(110,48));go.setOnClickListener(v->searchDestination());
   bottom.addView(row);
   LinearLayout actions=new LinearLayout(this);actions.setOrientation(LinearLayout.HORIZONTAL);
-  Button locate=new Button(this);locate.setText("MI UBICACIÓN");actions.addView(locate,new LinearLayout.LayoutParams(0,48,1));locate.setOnClickListener(v->locate());
-  Button tilt=new Button(this);tilt.setText("VISTA 3D");actions.addView(tilt,new LinearLayout.LayoutParams(0,48,1));tilt.setOnClickListener(v->toggle3d());
-  Button layers=new Button(this);layers.setText("CAPAS");actions.addView(layers,new LinearLayout.LayoutParams(0,48,1));layers.setOnClickListener(v->showLayers());
+  Button locate=new Button(this);locate.setText("Mi ubicación");styleButton(locate,false);actions.addView(locate,new LinearLayout.LayoutParams(0,48,1));locate.setOnClickListener(v->locate());
+  Button tilt=new Button(this);tilt.setText("Vista 3D");styleButton(tilt,false);actions.addView(tilt,new LinearLayout.LayoutParams(0,48,1));tilt.setOnClickListener(v->toggle3d());
+  Button layers=new Button(this);layers.setText("Capas");styleButton(layers,false);actions.addView(layers,new LinearLayout.LayoutParams(0,48,1));layers.setOnClickListener(v->showLayers());
   bottom.addView(actions);
   LinearLayout extra=new LinearLayout(this);extra.setOrientation(LinearLayout.HORIZONTAL);
-  Button offline=new Button(this);offline.setText("MAPAS OFFLINE");extra.addView(offline,new LinearLayout.LayoutParams(0,44,1));offline.setOnClickListener(v->startActivity(new android.content.Intent(this,OfflineMapsActivity.class)));
-  Button report=new Button(this);report.setText("REPORTAR");extra.addView(report,new LinearLayout.LayoutParams(0,44,1));report.setOnClickListener(v->reportAlert());
-  Button alerts=new Button(this);alerts.setText("ALERTAS");extra.addView(alerts,new LinearLayout.LayoutParams(0,44,1));alerts.setOnClickListener(v->showAlerts());
-  Button route=new Button(this);route.setText("TRAZAR RUTA");extra.addView(route,new LinearLayout.LayoutParams(0,44,1));route.setOnClickListener(v->routeToDestination());
+  Button offline=new Button(this);offline.setText("Mapas offline");styleButton(offline,false);extra.addView(offline,new LinearLayout.LayoutParams(0,44,1));offline.setOnClickListener(v->startActivity(new android.content.Intent(this,OfflineMapsActivity.class)));
+  Button report=new Button(this);report.setText("Reportar");styleButton(report,false);extra.addView(report,new LinearLayout.LayoutParams(0,44,1));report.setOnClickListener(v->reportAlert());
+  Button alerts=new Button(this);alerts.setText("Alertas");styleButton(alerts,false);extra.addView(alerts,new LinearLayout.LayoutParams(0,44,1));alerts.setOnClickListener(v->showAlerts());
+  Button route=new Button(this);route.setText("Trazar ruta");styleButton(route,true);extra.addView(route,new LinearLayout.LayoutParams(0,44,1));route.setOnClickListener(v->routeToDestination());
   bottom.addView(extra);
   TextView attribution=text("© OpenStreetMap contributors · OpenFreeMap",9,0xFFB8C3D0,false);attribution.setGravity(Gravity.CENTER);bottom.addView(attribution);
   FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-1,-2,Gravity.BOTTOM);bp.setMargins(12,0,12,12);frame.addView(bottom,bp);
-  Button back=new Button(this);back.setText("‹");back.setTextSize(24);FrameLayout.LayoutParams backp=new FrameLayout.LayoutParams(54,54,Gravity.TOP|Gravity.LEFT);backp.setMargins(18,100,0,0);frame.addView(back,backp);back.setOnClickListener(v->finish());
+  Button back=new Button(this);back.setText("‹");back.setTextSize(24);styleButton(back,false);FrameLayout.LayoutParams backp=new FrameLayout.LayoutParams(54,54,Gravity.TOP|Gravity.LEFT);backp.setMargins(18,100,0,0);frame.addView(back,backp);back.setOnClickListener(v->finish());
   setContentView(frame);
-  mapView.getMapAsync(m->{map=m;map.setStyle(new Style.Builder().fromUri(STYLE),s->{styleReady=true;map.setCameraPosition(new CameraPosition.Builder().target(defaultCenter).zoom(8.4).build());status.setText("Mapa listo · La Laguna · descarga paquetes offline y guarda alertas locales");loadLocalAlerts();});});
+  mapView.getMapAsync(m->{map=m;map.setStyle(new Style.Builder().fromUri(STYLE),s->{styleReady=true;map.setCameraPosition(new CameraPosition.Builder().target(defaultCenter).zoom(9.2).build());status.setText("Mapa listo · La Laguna · descarga paquetes offline y guarda alertas locales");loadLocalAlerts();});});
  }
  private void loadLocalAlerts(){if(map==null)return;for(LocalAlertStore.Alert a:LocalAlertStore.all(this)){map.addMarker(new MarkerOptions().position(new LatLng(a.lat,a.lon)).title("ALERTA · "+a.type).snippet(a.note));}}
  private void reportAlert(){

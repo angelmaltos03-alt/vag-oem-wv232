@@ -22,7 +22,7 @@ public final class VagOemApp extends Application {
    .readTimeout(35,TimeUnit.SECONDS)
    .addInterceptor(chain->{
     Request request=chain.request().newBuilder()
-     .header("User-Agent","VAG-OEM-WV232/0.10.0 (Android automotive offline maps)")
+     .header("User-Agent","VAG-OEM-WV232/0.11.0 (Android automotive offline maps)")
      .build();
     return chain.proceed(request);
    }).build();

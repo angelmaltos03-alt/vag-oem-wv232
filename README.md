@@ -1,6 +1,6 @@
 # VAG OEM · Volkswagen Polo 2020 · WV232 / 9070
 
-Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.10.0**.
+Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.11.0**.
 
 ## Módulos
 - VAG Home: launcher OEM horizontal.
@@ -10,12 +10,12 @@ Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswage
 - Valhalla Mobile 0.6.3: motor nativo de rutas offline.
 - VAG Sound Studio: perfiles locales y EQ de 10 bandas.
 - Audio Lab: diagnóstico de micrófono.
-- VAG Vehicle: pantallas de estado/viaje; CANBUS real pendiente.
+- VAG Vehicle: tablero OEM de combustible, km/L, autonomía, viajes, motor y estados; lecturas CANBUS reales pendientes de identificar e integrar.
 
 ## Una sola APK y datos offline
 
 ### Motor de rutas regional
-La APK integrada 0.10.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
+La APK integrada 0.11.0 se construye con el grafo Valhalla de Durango-Coahuila como asset `vag_valhalla_tiles.tar`. En el primer cálculo de ruta, la app copia el asset al almacenamiento privado y ejecuta el motor local. No necesita red para calcular una ruta cuando el paquete cubre origen y destino.
 
 El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 1. Descarga el extracto OSM de México desde Geofabrik.
@@ -24,7 +24,7 @@ El flujo de GitHub Actions `.github/workflows/build-offline-route-data.yml`:
 4. Publica el TAR de red vial.
 5. Descarga ese TAR en el job Android y lo integra en la APK final.
 
-El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.10.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
+El artefacto final de ese flujo se llama `VAG-OEM-WV232-0.11.0-OFFLINE-APK`. La construcción regional tarda y está pendiente de completar/validar en GitHub Actions.
 
 ### Mapas visuales
 MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales visibles usan el estilo Liberty de OpenFreeMap. El administrador ofrece:
@@ -34,7 +34,7 @@ MapLibre Native y la interfaz están incluidos en la APK. Los mapas vectoriales 
 - Durango capital (detalle urbano).
 - Saltillo (detalle urbano).
 
-Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.10.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
+Estos paquetes se descargan desde VAG OEM y quedan en la base offline SQLite de MapLibre para utilizarlos sin internet una vez completados. **Los tiles visuales no están precargados dentro del APK 0.11.0**; se descargan por región para mantener una instalación manejable y permitir actualizaciones. El motor de rutas sí se integra en la APK final del flujo de datos.
 
 OpenFreeMap permite descargas offline de hasta 3,000 teselas o 50 MB por descarga, con un máximo de cuatro solicitudes paralelas y User-Agent identificable. VAG OEM configura User-Agent propio, cuatro solicitudes simultáneas y elimina paquetes que superan el límite. <https://openfreemap.org/tos/>
 
@@ -54,6 +54,11 @@ Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico
 
 La guía giro a giro continua con seguimiento GPS y voz aún requiere completar y validar el módulo de navegación activa.
 
+## Vehículo y datos CANBUS / OBD-II
+La vista Vehículo presenta los campos de nivel de combustible, volumen estimado, autonomía, consumo instantáneo/promedio (km/L y L/100 km), viajes A/B, tiempo, distancia, velocidad promedio/máxima, RPM, temperatura de refrigerante, carga, acelerador, voltaje y estados de puertas/luces. Los valores se muestran como no disponibles hasta tener un decodificador CANBUS/OBD compatible y confirmar los PIDs/señales que entrega la radio. No se inventan lecturas. El volumen en litros y la autonomía requieren calibrar la capacidad del tanque y validar las señales de nivel/consumo.
+
+La silueta roja de tres vistas se basa en la lámina del Polo proporcionada para el diseño. En Teléfono se habilitan accesos al marcador, historial, contactos y favoritos mediante las aplicaciones nativas de Android.
+
 ## Sonido
 - EQ visual de 10 bandas, -6 a +6 dB.
 - Perfiles OEM equilibrado, Pop, Rock, Voz y Personalizado.
@@ -69,8 +74,8 @@ La guía giro a giro continua con seguimiento GPS y voz aún requiere completar 
 - CANBUS de solo lectura pendiente.
 
 ## Builds
-- APK base automática: `VAG-OEM-WV232-0.10.0-BASE-debug-APK` (sin grafo precargado).
-- APK con grafo regional: `VAG-OEM-WV232-0.10.0-OFFLINE-APK` (flujo de construcción de datos).
+- APK base automática: `VAG-OEM-WV232-0.11.0-BASE-debug-APK` (sin grafo precargado).
+- APK con grafo regional: `VAG-OEM-WV232-0.11.0-OFFLINE-APK` (flujo de construcción de datos).
 - JDK 17 · Gradle 8.9 · Android Gradle Plugin 8.7.3 · SDK 35.
 
 ## Validación
