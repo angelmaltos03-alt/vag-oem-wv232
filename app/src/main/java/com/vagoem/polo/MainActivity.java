@@ -16,7 +16,18 @@ import java.util.*;
 public class MainActivity extends Activity {
  private static final String PREFS="vag_oem_targets"; private SharedPreferences prefs; private VagUiView ui;
  @Override public void onCreate(Bundle state){super.onCreate(state);prefs=getSharedPreferences(PREFS,MODE_PRIVATE);hideSystemBars();ui=new VagUiView(this,this::handleAction);setContentView(ui);}
- @Override protected void onResume(){super.onResume();hideSystemBars();if(ui!=null)ui.invalidate();}
+ @Override protected void onResume(){super.onResume();hideSystemBars();refreshGpsUi();}
+ private void refreshGpsUi(){if(ui!=null){ui.setGpsSnapshot(GpsTelemetryEngine.read(this,null));}}
+ private void showGpsDiagnostics(){
+  GpsTelemetryEngine.Snapshot g=GpsTelemetryEngine.read(this,null);
+  String coord=Double.isFinite(g.latitude)?String.format(Locale.US,"%.6f, %.6f",g.latitude,g.longitude):"Sin posición guardada";
+  String age=g.fixTime>0?new java.text.SimpleDateFormat("dd/MM HH:mm:ss",Locale.getDefault()).format(new Date(g.fixTime)):"Sin fix GPS";
+  String altitude=Float.isFinite(g.altitudeMeters)?String.format(Locale.US,"%.0f m",g.altitudeMeters):"No disponible";
+  String accuracy=Float.isFinite(g.accuracyMeters)?String.format(Locale.US,"± %.0f m",g.accuracyMeters):"No disponible";
+  String sats=g.satellitesVisible<0?"No reportado":g.satellitesUsed+" usados / "+g.satellitesVisible+" visibles";
+  String message="POSICIÓN\n"+coord+"\n\nÚLTIMO FIX\n"+age+"\n\nPRECISIÓN\n"+accuracy+"\n\nALTITUD\n"+altitude+"\n\nSATÉLITES\n"+sats+"\n\nCONSTELACIONES\n"+g.constellations+"\n\nDISTANCIA DEL VIAJE\n"+String.format(Locale.US,"%.2f km",g.tripKm)+"\n\nFuente: Android Location / GNSS. No son datos CANBUS.";
+  new AlertDialog.Builder(this).setTitle("Diagnóstico GPS / GNSS").setMessage(message).setPositiveButton("Cerrar",null).show();
+ }
  private void hideSystemBars(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
  private void handleAction(String a){switch(a){
   case "HOME":ui.setScreen("HOME");break;
