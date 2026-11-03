@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class OfflineMapsActivity extends Activity {
  private static final String STYLE="https://tiles.openfreemap.org/styles/liberty";
- private static final long TILE_LIMIT=3000L;
+ private static final long TILE_LIMIT=3000L;\n private static final long BYTE_LIMIT=50L*1024L*1024L;
  private LinearLayout root,installedList;
  private TextView status,storage;
  private ProgressBar progress;
@@ -55,7 +55,7 @@ public class OfflineMapsActivity extends Activity {
   for(Pack p:packs){
    LinearLayout line=new LinearLayout(this);line.setOrientation(LinearLayout.VERTICAL);
    line.addView(label(p.name,14,Color.WHITE,true));
-   line.addView(label(p.description+"\nZoom "+(int)p.min+"–"+(int)p.max+" · hasta "+TILE_LIMIT+" teselas en la base offline",11,0xFF9BA8B7,false));
+   line.addView(label(p.description+"\nZoom "+(int)p.min+"–"+(int)p.max+" · máximo "+TILE_LIMIT+" teselas / 50 MB por descarga",11,0xFF9BA8B7,false));
    Button d=new Button(this);d.setText("DESCARGAR REGIÓN");d.setOnClickListener(v->download(p));line.addView(d);
    card(line);
   }
@@ -63,7 +63,7 @@ public class OfflineMapsActivity extends Activity {
   installedList=new LinearLayout(this);installedList.setOrientation(1);card(installedList);
   button("ACTUALIZAR LISTA",this::listRegions);
   button("VOLVER A NAVEGACIÓN",this::finish);
-  card(label("El motor y el administrador están dentro de VAG OEM. Los datos cartográficos se descargan desde esta pantalla y se guardan en la base offline de MapLibre. La descarga inicial requiere conexión. OpenFreeMap permite cada descarga de hasta 3,000 teselas o 50 MB, con máximo 4 solicitudes simultáneas y User-Agent identificable. Esta app limita el contador de teselas; el límite de bytes y el encabezado identificador deben verificarse antes de habilitar descargas públicas a gran escala.",11,0xFFFFC4C4,false));
+  card(label("El motor y el administrador están dentro de VAG OEM. Los datos cartográficos se descargan desde esta pantalla y se guardan en la base offline de MapLibre. La descarga inicial requiere conexión. OpenFreeMap permite cada descarga de hasta 3,000 teselas o 50 MB, con máximo 4 solicitudes simultáneas y User-Agent identificable. La app identifica sus solicitudes, limita a 4 conexiones simultáneas y pausa al alcanzar 3,000 teselas o 50 MB. El tamaño se comprueba durante la descarga; puede existir una pequeña variación por respuestas que ya estaban en tránsito.",11,0xFFFFC4C4,false));
   card(label("Atribución: OpenFreeMap © OpenMapTiles · Datos de OpenStreetMap (ODbL).",10,0xFFD7DEE8,false));
   setContentView(sc);
  }
@@ -117,12 +117,12 @@ public class OfflineMapsActivity extends Activity {
      String name="Región offline";
      try{name=new JSONObject(new String(region.getMetadata(),StandardCharsets.UTF_8)).optString("name",name);}catch(Exception ignored){}
      LinearLayout row=new LinearLayout(OfflineMapsActivity.this);row.setOrientation(LinearLayout.VERTICAL);
-     row.addView(label(name,12,Color.WHITE,true));
+     row.addView(label(regionName,12,Color.WHITE,true));
      region.getStatus(new OfflineRegion.OfflineRegionStatusCallback(){
       @Override public void onStatus(OfflineRegionStatus s){runOnUiThread(()->row.addView(label((s.isComplete()?"Disponible sin conexión":"Descarga parcial")+" · "+s.getCompletedTileCount()+" teselas · "+String.format(Locale.US,"%.1f MB",s.getCompletedResourceSize()/1048576.0),10,0xFF9BA8B7,false)));}
       @Override public void onError(String error){runOnUiThread(()->row.addView(label("Estado no disponible: "+error,10,0xFFFFA0A0,false)));}
      });
-     Button del=new Button(OfflineMapsActivity.this);del.setText("ELIMINAR PAQUETE");del.setOnClickListener(v->new AlertDialog.Builder(OfflineMapsActivity.this).setTitle("Eliminar "+name).setMessage("Se borrará este paquete offline del estéreo.").setNegativeButton("Cancelar",null).setPositiveButton("Eliminar",(d,w)->region.delete(new OfflineRegion.OfflineRegionDeleteCallback(){
+     Button del=new Button(OfflineMapsActivity.this);del.setText("ELIMINAR PAQUETE");del.setOnClickListener(v->new AlertDialog.Builder(OfflineMapsActivity.this).setTitle("Eliminar "+regionName).setMessage("Se borrará este paquete offline del estéreo.").setNegativeButton("Cancelar",null).setPositiveButton("Eliminar",(d,w)->region.delete(new OfflineRegion.OfflineRegionDeleteCallback(){
       @Override public void onDelete(){runOnUiThread(()->{status.setText("Paquete eliminado.");listRegions();refreshStorage();});}
       @Override public void onError(String error){runOnUiThread(()->status.setText("No se pudo eliminar: "+error));}
      })).show());row.addView(del);installedList.addView(row);
