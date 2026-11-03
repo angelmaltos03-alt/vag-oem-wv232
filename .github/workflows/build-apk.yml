@@ -31,13 +31,13 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: VAG-OEM-WV232-0.8.0-debug-APK
+          name: VAG-OEM-WV232-0.9.0-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Build summary
         if: success()
         run: |
-          echo "## VAG OEM WV232 0.8.0 — APK generado" >> "$GITHUB_STEP_SUMMARY"
+          echo "## VAG OEM WV232 0.9.0 — APK generado" >> "$GITHUB_STEP_SUMMARY"
           echo "Módulos: Navigation + Offline Map Manager + Valhalla engine + Local Alerts + Sound Studio + Audio Lab" >> "$GITHUB_STEP_SUMMARY"
-          echo "Artefacto: VAG-OEM-WV232-0.8.0-debug-APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artefacto: VAG-OEM-WV232-0.9.0-debug-APK" >> "$GITHUB_STEP_SUMMARY"
