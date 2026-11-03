@@ -129,7 +129,7 @@ public class VagUiView extends View {
    RectF dst=fit(poloSilhouette,52,218,404,247);
    p.setAlpha(255);c.drawBitmap(poloSilhouette,null,dst,p);p.setAlpha(255);
   }
-  txt(c,"POLO GTI  ·  VISTAS DE REFERENCIA",254,497,8,0xFF8F9BA9,true,Paint.Align.CENTER);
+  txt(c,"VOLKSWAGEN POLO 2020  ·  VISTAS DE REFERENCIA",254,497,8,0xFF8F9BA9,true,Paint.Align.CENTER);
   panel(c,493,191,496,329);
   String[] labels,units;
   if(vehicleTab==0){
