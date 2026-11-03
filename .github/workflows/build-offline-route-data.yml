@@ -1,6 +1,11 @@
 name: Build offline routing data
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/build-valhalla-region.sh'
+      - '.github/workflows/build-offline-route-data.yml'
 permissions:
   contents: read
 jobs:
