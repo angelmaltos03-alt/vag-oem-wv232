@@ -93,6 +93,10 @@ Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico
 
 ## Navegación
 
+### VAG GPS Intelligence
+
+La navegación alimenta `GpsTelemetryEngine`, un agregador local compartido de telemetría GPS/GNSS. Registra posición, velocidad, rumbo, altitud y precisión cuando Android los entrega; acumula distancia estimada del trayecto y velocidad máxima/promedio, y consulta el estado GNSS para contar satélites visibles/usados e identificar constelaciones GPS, GLONASS, Galileo y BeiDou cuando el receptor las expone. Los datos de viaje se guardan localmente en preferencias privadas del dispositivo. La distancia descarta posiciones con precisión horizontal peor que 30 m y saltos/segmentos no plausibles; por ello es una estimación GPS, no el odómetro del vehículo. El callback GNSS se activa mientras VAG Navigation está en primer plano y se libera al salir. No todos los receptores Android exponen satélites o constelaciones; los campos ausentes se conservan como no disponibles. Esta primera integración alimenta el motor central desde Navigation; las pantallas Vehicle/Trip y el historial exportable quedan como siguientes consumidores de la API.
+
 VAG Navigation 0.13.1 adopta un cockpit automotriz nocturno inspirado en navegadores 3D: cartografía OpenFreeMap Dark, cámara inclinada, edificios vectoriales extruidos, seguimiento GPS con orientación por rumbo, ruta roja Volkswagen, buscador flotante, tarjeta de maniobra, controles laterales y resumen inferior del recorrido.
 
 ### Cartografía y perspectiva
