@@ -31,7 +31,8 @@ public class OfflineMapsActivity extends Activity {
  private TextView status,storage;
  private ProgressBar progress;
  private OfflineManager manager;
- private boolean downloading=false;\n private static final int REQUEST_ROUTE_TILES=811;
+ private boolean downloading=false;
+ private static final int REQUEST_ROUTE_TILES=811;
  private static final class Pack {
   final String id,name,description;final double south,west,north,east,min,max;
   Pack(String i,String n,String d,double s,double w,double no,double e,double mi,double ma){id=i;name=n;description=d;south=s;west=w;north=no;east=e;min=mi;max=ma;}
