@@ -20,7 +20,8 @@ import java.util.Locale;
 
 public class OfflineMapsActivity extends Activity {
  private static final String STYLE="https://tiles.openfreemap.org/styles/liberty";
- private static final long TILE_LIMIT=3000L;\n private static final long BYTE_LIMIT=50L*1024L*1024L;
+ private static final long TILE_LIMIT=3000L;
+ private static final long BYTE_LIMIT=50L*1024L*1024L;
  private LinearLayout root,installedList;
  private TextView status,storage;
  private ProgressBar progress;
@@ -95,7 +96,7 @@ public class OfflineMapsActivity extends Activity {
        long count=s.getCompletedTileCount();long bytes=s.getCompletedResourceSize();long required=s.getRequiredResourceCount();
        int pct=required>0?(int)Math.min(100,100*s.getCompletedResourceCount()/required):0;
        runOnUiThread(()->{progress.setProgress(pct);status.setText(String.format(Locale.US,"%s · %d teselas · %.1f MB · %d%%",p.name,count,bytes/1048576.0,pct));});
-       if(count>TILE_LIMIT){region.setDownloadState(OfflineRegion.STATE_INACTIVE);downloading=false;runOnUiThread(()->status.setText("Límite de teselas alcanzado. Región pausada; elimina o reduce el paquete."));}
+       if(!s.isComplete()&&(count>=TILE_LIMIT||bytes>=BYTE_LIMIT)){region.setDownloadState(OfflineRegion.STATE_INACTIVE);downloading=false;runOnUiThread(()->status.setText(count>=TILE_LIMIT?"Límite de 3,000 teselas alcanzado. Región pausada.":"Límite de 50 MB alcanzado. Región pausada."));}
        else if(s.isComplete()){region.setDownloadState(OfflineRegion.STATE_INACTIVE);downloading=false;runOnUiThread(()->{status.setText("Región descargada y guardada para uso offline: "+p.name);listRegions();refreshStorage();});}
       }
       @Override public void onError(OfflineRegionError e){downloading=false;runOnUiThread(()->status.setText("Error de descarga: "+e.toString()));}
