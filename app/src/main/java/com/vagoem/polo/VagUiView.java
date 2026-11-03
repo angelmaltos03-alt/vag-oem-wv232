@@ -11,6 +11,7 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,6 +26,7 @@ public class VagUiView extends View {
  private final Bitmap poloSilhouette;
  private String screen="HOME";
  private int vehicleTab=0, pressedTile=-1;
+ private long pressStartedAt=0L;
  private final SimpleDateFormat clock=new SimpleDateFormat("HH:mm",Locale.getDefault());
  private final SimpleDateFormat date=new SimpleDateFormat("EEE, dd MMM",Locale.getDefault());
 
@@ -84,6 +86,7 @@ public class VagUiView extends View {
    txt(c,subs[i],x+113,y+130,10,i==3?0xFFEFA0AA:MUTED,false,Paint.Align.CENTER);
    softAccent(c,x+18,y+153,x+208,y+156,i==pressedTile);
   }
+  txt(c,"MANTÉN PRESIONADO UN ACCESO PARA ASIGNAR SU APP",512,528,8,0xFFE58B96,true,Paint.Align.CENTER);
  }
  private void drawTile(Canvas c,float x,float y,float w,float h,boolean active){
   if(active){p.setColor(0x28FF405B);c.drawRoundRect(new RectF(x-4,y-4,x+w+4,y+h+4),13,13,p);}
@@ -205,13 +208,22 @@ public class VagUiView extends View {
  @Override public boolean onTouchEvent(MotionEvent e){
   float x=e.getX()*W/Math.max(1,getWidth()),y=e.getY()*H/Math.max(1,getHeight());
   if(e.getAction()==MotionEvent.ACTION_DOWN){
-   pressedTile=hitTile(x,y);invalidate();return true;
+   pressedTile=hitTile(x,y);pressStartedAt=android.os.SystemClock.uptimeMillis();invalidate();return true;
   }
   if(e.getAction()==MotionEvent.ACTION_UP){
-   int down=pressedTile;pressedTile=-1;invalidate();tap(x,y,down);performClick();return true;
+   int down=pressedTile;long held=android.os.SystemClock.uptimeMillis()-pressStartedAt;
+   pressedTile=-1;invalidate();
+   if("HOME".equals(screen)&&down>=0&&held>=600L&&down==hitTile(x,y)){
+    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);longPressHomeTile(down);performClick();return true;
+   }
+   tap(x,y,down);performClick();return true;
   }
-  if(e.getAction()==MotionEvent.ACTION_CANCEL){pressedTile=-1;invalidate();return true;}
+  if(e.getAction()==MotionEvent.ACTION_CANCEL){pressedTile=-1;pressStartedAt=0L;invalidate();return true;}
   return true;
+ }
+ private void longPressHomeTile(int tile){
+  String[] actions={"PICK_RADIO","PICK_MUSIC","PICK_PHONE","PICK_CARPLAY","PICK_NAV","PICK_CANBUS","PICK_SETTINGS","PICK_DSP"};
+  if(tile>=0&&tile<actions.length)act(actions[tile]);
  }
  private int hitTile(float x,float y){
   if("HOME".equals(screen)&&y>=119&&y<457){int col=(int)((x-38)/242);int row=y<278?0:1;return col>=0&&col<4?row*4+col:-1;}

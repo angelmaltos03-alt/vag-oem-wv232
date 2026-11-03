@@ -23,7 +23,8 @@ public class MainActivity extends Activity {
   case "RADIO":ui.setScreen("RADIO");break;
   case "MEDIA":ui.setScreen("MEDIA");break;
   case "PHONE":ui.setScreen("PHONE");break;
-  case "NAVIGATION":case "OPEN_NAV":startActivity(new Intent(this,NavigationActivity.class));break;
+  case "NAVIGATION":if(!launchSavedTarget("NAV","Navegación"))startActivity(new Intent(this,NavigationActivity.class));break;
+  case "OPEN_NAV":startActivity(new Intent(this,NavigationActivity.class));break;
   case "VEHICLE":ui.setScreen("VEHICLE");break;
   case "TRIP":ui.setScreen("TRIP");break;
   case "SETTINGS":ui.setScreen("SETTINGS");break;
@@ -34,8 +35,8 @@ public class MainActivity extends Activity {
   case "OPEN_CALL_LOG":openCallLog();break;
   case "OPEN_CONTACTS":case "OPEN_FAVORITES":openContacts();break;
   case "OPEN_CANBUS":launchTarget("CANBUS","CANBUS");break;
-  case "SOUND":case "OPEN_SOUND":startActivity(new Intent(this,SoundStudioActivity.class));break;
-  case "ANDROID_SETTINGS":openSettings(Settings.ACTION_SETTINGS);break;
+  case "SOUND":case "OPEN_SOUND":if(!launchSavedTarget("DSP","DSP / sonido"))startActivity(new Intent(this,SoundStudioActivity.class));break;
+  case "ANDROID_SETTINGS":if(!launchSavedTarget("OEM_SETTINGS","Ajustes del fabricante"))openSettings(Settings.ACTION_SETTINGS);break;
   case "PICK_RADIO":pick("RADIO","Selecciona la aplicación de radio");break;
   case "PICK_MUSIC":pick("MUSIC","Selecciona el reproductor de música");break;
   case "PICK_PHONE":pick("PHONE","Selecciona Teléfono / Bluetooth");break;
@@ -43,6 +44,7 @@ public class MainActivity extends Activity {
   case "PICK_NAV":pick("NAV","Selecciona tu navegador offline");break;
   case "PICK_CANBUS":pick("CANBUS","Selecciona la aplicación CANBUS");break;
   case "PICK_SETTINGS":pick("OEM_SETTINGS","Selecciona ajustes del fabricante");break;
+  case "PICK_DSP":pick("DSP","Selecciona tu aplicación DSP / sonido");break;
   case "RESET_LINKS":new AlertDialog.Builder(this).setTitle("Restablecer vínculos").setMessage("Se borrarán las aplicaciones vinculadas, pero no se desinstalarán.").setNegativeButton("Cancelar",null).setPositiveButton("Restablecer",(d,w)->{prefs.edit().clear().apply();ui.invalidate();}).show();break;
  }}
  private void openDialer(){
@@ -59,6 +61,7 @@ public class MainActivity extends Activity {
  }
  private void openSettings(String a){try{startActivity(new Intent(a));}catch(Exception e){toast("No se pudieron abrir los ajustes.");}}
  private void launchCPLink(){String saved=prefs.getString("CARPLAY",null);if(saved!=null&&launch(saved,"CPLink"))return;List<ResolveInfo> matches=new ArrayList<>();for(ResolveInfo r:launchableApps()){String label=String.valueOf(r.loadLabel(getPackageManager())).toLowerCase();String pkg=r.activityInfo.packageName.toLowerCase();if(label.contains("cplink")||label.contains("cp link")||pkg.contains("cplink"))matches.add(r);}if(matches.size()==1){String pkg=matches.get(0).activityInfo.packageName;prefs.edit().putString("CARPLAY",pkg).apply();launch(pkg,"CPLink");}else pick("CARPLAY","Selecciona la aplicación CPLink");}
+ private boolean launchSavedTarget(String k,String l){String pkg=prefs.getString(k,null);if(pkg==null)return false;if(launch(pkg,l))return true;prefs.edit().remove(k).apply();toast("La app vinculada ya no está disponible. Se restableció el acceso.");return false;}
  private void launchTarget(String k,String l){String pkg=prefs.getString(k,null);if(pkg==null){toast("Vincula "+l+" desde Ajustes.");ui.setScreen("SETTINGS");}else launch(pkg,l);}
  private boolean launch(String pkg,String label){try{Intent i=getPackageManager().getLaunchIntentForPackage(pkg);if(i==null)return false;i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);startActivity(i);return true;}catch(Exception e){toast("No se pudo abrir "+label);return false;}}
  private void pick(String key,String title){List<ResolveInfo> apps=launchableApps();if(apps.isEmpty()){toast("No hay aplicaciones disponibles.");return;}String[] labels=new String[apps.size()];for(int n=0;n<apps.size();n++){ResolveInfo r=apps.get(n);labels[n]=String.valueOf(r.loadLabel(getPackageManager()))+"\n"+r.activityInfo.packageName;}new AlertDialog.Builder(this).setTitle(title).setItems(labels,(d,w)->{String pkg=apps.get(w).activityInfo.packageName;prefs.edit().putString(key,pkg).apply();if("CARPLAY".equals(key))launch(pkg,"CPLink");toast("Aplicación vinculada.");}).setNegativeButton("Cancelar",null).show();}
