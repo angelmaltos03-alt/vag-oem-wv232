@@ -31,13 +31,13 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: VAG-OEM-WV232-0.11.0-BASE-debug-APK
+          name: VAG-OEM-WV232-0.12.0-BASE-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Build summary
         if: success()
         run: |
-          echo "## VAG OEM WV232 0.11.0-BASE — APK generado" >> "$GITHUB_STEP_SUMMARY"
+          echo "## VAG OEM WV232 0.12.0-BASE — APK generado" >> "$GITHUB_STEP_SUMMARY"
           echo "Módulos: Launcher OEM + MapLibre Navigation + Offline Map Manager + Valhalla engine + Local Alerts + Sound Studio + Vehicle telemetry UI" >> "$GITHUB_STEP_SUMMARY"
           echo "Aviso: los valores CANBUS permanecen sin lectura hasta integrar un decodificador compatible." >> "$GITHUB_STEP_SUMMARY"
