@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="\${1:-$PWD/build/route-data}"
+ROOT="${1:-$PWD/build/route-data}"
 mkdir -p "$ROOT"
 PBF="$ROOT/mexico-latest.osm.pbf"
 CLIP="$ROOT/durango-coahuila.osm.pbf"
