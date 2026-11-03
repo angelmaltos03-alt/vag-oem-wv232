@@ -92,13 +92,23 @@ OpenFreeMap permite descargas offline de hasta 3,000 teselas o 50 MB por descarg
 Son reportes locales; no son alertas Waze ni se comparten en vivo. Para tráfico y alertas comunitarias hace falta un backend/feed y conectividad.
 
 ## Navegación
-- Búsqueda por proveedor Geocoder cuando está disponible.
-- Búsqueda offline por coordenadas `latitud,longitud`.
-- GPS de origen.
-- Cálculo de ruta offline Valhalla cuando está instalado el grafo.
-- Dibujo de ruta y resumen de distancia/tiempo/instrucción inicial.
 
-La guía giro a giro continua con seguimiento GPS y voz aún requiere completar y validar el módulo de navegación activa.
+La pantalla usa **MapLibre Native + OpenFreeMap Bright** como cartografía base. Bright es un estilo vectorial claro con carreteras, nombres de calles, zonas y puntos de interés de OpenStreetMap; no es una imagen de mapa estática. [OpenFreeMap](https://openfreemap.org/) ofrece los estilos Bright, Liberty, Positron y Fiord, sin exigir una llave API para el uso público documentado.
+
+### Interfaz de navegación
+- Mapa a pantalla completa con controles de VAG OEM en grafito y rojo.
+- Búsqueda superior por dirección mediante Geocoder del dispositivo cuando está disponible; también acepta coordenadas de latitud y longitud.
+- Selección de destino tocando directamente un punto en el mapa.
+- Controles flotantes para centrar en la última posición GPS disponible, cambiar perspectiva 3D y abrir las opciones de capas.
+- Tarjeta inferior adaptable: exploración, destino seleccionado o vista previa de ruta, con distancia, duración estimada e instrucción inicial cuando Valhalla devuelve esos datos.
+- La ruta se dibuja con un contorno oscuro y un trazo rojo Volkswagen para que destaque sobre las calles.
+
+### Motor y mapas offline
+- Cálculo local con Valhalla cuando el paquete vial de la región está integrado o importado.
+- Paquetes visuales descargables para Durango, Coahuila, La Laguna, Durango capital y Saltillo. El gestor y la navegación comparten el estilo Bright.
+- Atribución de cartografía: OpenFreeMap / OpenMapTiles y datos de OpenStreetMap (ODbL).
+
+**Límites actuales:** la búsqueda de direcciones necesita conexión y un proveedor Geocoder disponible. Las coordenadas pueden introducirse manualmente. La vista previa de ruta no es todavía guía giro a giro: no hay seguimiento continuo del recorrido, voz, tráfico en vivo, accidentes comunitarios ni recálculo automático como en Waze o Google Maps. Las alertas que se reportan desde el equipo son locales y no se comparten con otros conductores.
 
 ## Vehículo y datos CANBUS / OBD-II
 La vista Vehículo presenta los campos de nivel de combustible, volumen estimado, autonomía, consumo instantáneo/promedio (km/L y L/100 km), viajes A/B, tiempo, distancia, velocidad promedio/máxima, RPM, temperatura de refrigerante, carga, acelerador, voltaje y estados de puertas/luces. Los valores se muestran como no disponibles hasta tener un decodificador CANBUS/OBD compatible y confirmar los PIDs/señales que entrega la radio. No se inventan lecturas. El volumen en litros y la autonomía requieren calibrar la capacidad del tanque y validar las señales de nivel/consumo.
