@@ -203,7 +203,26 @@ public class MainActivity extends Activity {
  private boolean launchSavedTarget(String k,String l){String pkg=prefs.getString(k,null);if(pkg==null)return false;if(launch(pkg,l))return true;prefs.edit().remove(k).apply();toast("La app vinculada ya no está disponible. Se restableció el acceso.");return false;}
  private void launchTarget(String k,String l){String pkg=prefs.getString(k,null);if(pkg==null){toast("Vincula "+l+" desde Ajustes.");showScreen("SETTINGS");}else launch(pkg,l);}
  private boolean launch(String pkg,String label){try{Intent i=getPackageManager().getLaunchIntentForPackage(pkg);if(i==null)return false;i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);startActivity(i);return true;}catch(Exception e){toast("No se pudo abrir "+label);return false;}}
- private void pick(String key,String title){List<ResolveInfo> apps=launchableApps();if(apps.isEmpty()){toast("No hay aplicaciones disponibles.");return;}String[] labels=new String[apps.size()];for(int n=0;n<apps.size();n++){ResolveInfo r=apps.get(n);labels[n]=String.valueOf(r.loadLabel(getPackageManager()))+"\n"+r.activityInfo.packageName;}new AlertDialog.Builder(this).setTitle(title).setItems(labels,(d,w)->{String pkg=apps.get(w).activityInfo.packageName;prefs.edit().putString(key,pkg).apply();if("CARPLAY".equals(key))launch(pkg,"CPLink");toast("Aplicación vinculada.");}).setNegativeButton("Cancelar",null).show();}
+ private void pick(String key,String title){
+  List<ResolveInfo> apps=launchableApps();
+  if(apps.isEmpty()){toast("No hay aplicaciones disponibles.");return;}
+  pickFromList(key,title,apps);
+ }
+ private void pickFromList(String key,String title,List<ResolveInfo> apps){
+  String[] labels=new String[apps.size()];
+  for(int n=0;n<apps.size();n++){
+   ResolveInfo item=apps.get(n);
+   labels[n]=String.valueOf(item.loadLabel(getPackageManager()))+"\\n"+item.activityInfo.packageName;
+  }
+  new AlertDialog.Builder(this).setTitle(title).setItems(labels,(dialog,which)->{
+   String pkg=apps.get(which).activityInfo.packageName;
+   prefs.edit().putString(key,pkg).apply();
+   if("CARPLAY".equals(key))launch(pkg,"CPLink");
+   else if("NAV".equals(key))launch(pkg,"Map Live / Navegación");
+   else if("CANBUS".equals(key))launch(pkg,"CANBUS / Hiworld");
+   toast("Aplicación vinculada.");
+  }).setNegativeButton("Cancelar",null).show();
+ }
  private List<ResolveInfo> launchableApps(){Intent i=new Intent(Intent.ACTION_MAIN);i.addCategory(Intent.CATEGORY_LAUNCHER);List<ResolveInfo> a=getPackageManager().queryIntentActivities(i,0);Collections.sort(a,Comparator.comparing(x->String.valueOf(x.loadLabel(getPackageManager())),String.CASE_INSENSITIVE_ORDER));return a;}
  private void toast(String s){Toast.makeText(this,s,Toast.LENGTH_SHORT).show();}
  @Override public void onBackPressed(){if(ui!=null&&!"HOME".equals(ui.getScreen()))goBack();else super.onBackPressed();}
