@@ -89,9 +89,16 @@ public class NavigationActivity extends Activity {
  }
  private void searchDestination(){
   String q=search.getText().toString().trim();if(q.isEmpty()){search.setError("Escribe un destino");return;}
-  if(!Geocoder.isPresent()){status.setText("Este equipo no tiene servicio de búsqueda de direcciones");return;}
+  String[] coordinateParts=q.replace(" ","").split(",");
+  if(coordinateParts.length==2){try{double lat=Double.parseDouble(coordinateParts[0]),lon=Double.parseDouble(coordinateParts[1]);if(lat>=-90&&lat<=90&&lon>=-180&&lon<=180){setDestination(new LatLng(lat,lon),"Coordenadas GPS");return;}}catch(NumberFormatException ignored){}}
+  if(!Geocoder.isPresent()){status.setText("Sin buscador de direcciones. Puedes introducir coordenadas latitud,longitud.");return;}
   status.setText("Buscando: "+q+"…");
-  new Thread(()->{try{List<Address> a=new Geocoder(this,Locale.getDefault()).getFromLocationName(q,1);runOnUiThread(()->{if(a==null||a.isEmpty()){status.setText("No encontramos el destino. La búsqueda inicial requiere conexión.");return;}Address x=a.get(0);LatLng p=new LatLng(x.getLatitude(),x.getLongitude());destination=p;if(map!=null){map.addMarker(new MarkerOptions().position(p).title(q));map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(p,14));}status.setText("Destino localizado · "+q+" · pulsa TRAZAR RUTA");});}catch(Exception e){runOnUiThread(()->status.setText("Búsqueda no disponible sin conexión o proveedor de geocodificación."));}},"VAG-Geocoder").start();
+  new Thread(()->{try{List<Address> a=new Geocoder(this,Locale.getDefault()).getFromLocationName(q,1);runOnUiThread(()->{if(a==null||a.isEmpty()){status.setText("No encontramos el destino. La búsqueda inicial requiere conexión.");return;}Address x=a.get(0);setDestination(new LatLng(x.getLatitude(),x.getLongitude()),q);});}catch(Exception e){runOnUiThread(()->status.setText("Búsqueda no disponible sin conexión o proveedor de geocodificación."));}},"VAG-Geocoder").start();
+ }
+ private void setDestination(LatLng point,String label){
+  destination=point;
+  if(map!=null){map.addMarker(new MarkerOptions().position(point).title(label));map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(point,14));}
+  status.setText("Destino seleccionado · "+label+" · pulsa TRAZAR RUTA");
  }
  private void routeToDestination(){
   if(destination==null){status.setText("Primero busca y selecciona un destino.");return;}
