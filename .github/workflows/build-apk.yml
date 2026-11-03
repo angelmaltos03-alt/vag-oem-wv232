@@ -1,13 +1,10 @@
 name: Build VAG OEM WV232 APK
-
 on:
   workflow_dispatch:
   push:
     branches: [main]
-
 permissions:
   contents: read
-
 jobs:
   build-apk:
     name: Compile debug APK
@@ -34,13 +31,13 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: VAG-OEM-WV232-0.3.1-debug-APK
+          name: VAG-OEM-WV232-0.4.0-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Build summary
         if: success()
         run: |
-          echo "## VAG OEM WV232 — APK generado" >> "$GITHUB_STEP_SUMMARY"
+          echo "## VAG OEM WV232 0.4.0 — APK generado" >> "$GITHUB_STEP_SUMMARY"
           echo "Archivo: app-debug.apk" >> "$GITHUB_STEP_SUMMARY"
-          echo "Artefacto: VAG-OEM-WV232-0.3.1-debug-APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artefacto: VAG-OEM-WV232-0.4.0-debug-APK" >> "$GITHUB_STEP_SUMMARY"
