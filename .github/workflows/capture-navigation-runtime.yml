@@ -1,0 +1,58 @@
+name: Capture VAG Navigation runtime screenshot
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build debug APK
+        run: gradle --no-daemon --stacktrace assembleDebug
+      - name: Launch Android emulator and capture the live map
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim
+          script: |
+            adb install app/build/outputs/apk/debug/app-debug.apk
+            adb shell pm grant com.vagoem.polo android.permission.ACCESS_FINE_LOCATION || true
+            adb shell pm grant com.vagoem.polo android.permission.ACCESS_COARSE_LOCATION || true
+            adb shell am start -n com.vagoem.polo/.NavigationActivity
+            sleep 50
+            mkdir -p docs/screenshots
+            adb exec-out screencap -p > docs/screenshots/navigation-runtime.png
+            test -s docs/screenshots/navigation-runtime.png
+      - name: Upload raw runtime screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: VAG-OEM-Navigation-Runtime-Screenshot
+          path: docs/screenshots/navigation-runtime.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Commit runtime screenshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/navigation-runtime.png
+          git commit -m "Add real Android runtime navigation screenshot" || echo "No screenshot changes to commit"
+          git push
