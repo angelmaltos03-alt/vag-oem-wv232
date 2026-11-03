@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
  private LocationListener vehicleLocationListener;
  @Override public void onCreate(Bundle state){super.onCreate(state);prefs=getSharedPreferences(PREFS,MODE_PRIVATE);hideSystemBars();ui=new VagUiView(this,this::handleAction);setContentView(ui);showPendingCrashReport();}
  @Override protected void onResume(){super.onResume();hideSystemBars();refreshGpsUi();updateTelemetryForScreen();}
- @Override protected void onWindowFocusChanged(boolean hasFocus){super.onWindowFocusChanged(hasFocus);if(hasFocus)hideSystemBars();}
+ @Override public void onWindowFocusChanged(boolean hasFocus){super.onWindowFocusChanged(hasFocus);if(hasFocus)hideSystemBars();}
  @Override protected void onPause(){stopVehicleTelemetry();super.onPause();}
 
  private void showScreen(String target){
