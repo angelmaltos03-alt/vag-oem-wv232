@@ -111,7 +111,7 @@ VAG Navigation 0.12.0 adopta un cockpit automotriz nocturno: cabecera OEM, rail 
 - Gestor de mapas offline actualizado al estilo Fiord.
 
 ### Límites reales
-El mapa vectorial y la extrusión 3D funcionan con conexión o con teselas offline compatibles. La altura y densidad de edificios dependen de los datos OSM de cada zona; no es una vista satelital ni edificios fotorealistas. El seguimiento GPS continuo, recálculo automático, voz, tráfico en vivo y alertas comunitarias no están implementados. El panel de velocidad no muestra un límite legal si no existe una fuente de señales validada.
+El mapa vectorial y la extrusión 3D funcionan con conexión o con teselas offline compatibles. La altura y densidad de edificios dependen de los datos OSM de cada zona; no es una vista satelital ni edificios fotorealistas. El seguimiento GPS en primer plano actualiza el marcador del vehículo y la velocidad reportada por Android; todavía no existe seguimiento de ruta giro a giro, recálculo automático, voz, tráfico en vivo ni alertas comunitarias. El panel de velocidad no muestra un límite legal si no existe una fuente de señales validada.
 
 **Migración de mapas offline:** las regiones descargadas con el estilo Bright de versiones anteriores no corresponden al nuevo estilo Fiord. Después de actualizar, elimina y vuelve a descargar las regiones visuales para conservarlas sin conexión.
 
