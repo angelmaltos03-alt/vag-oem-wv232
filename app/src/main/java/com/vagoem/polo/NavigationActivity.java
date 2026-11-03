@@ -171,7 +171,7 @@ public class NavigationActivity extends Activity {
     styleReady=true;
     map.setCameraPosition(new CameraPosition.Builder()
       .target(defaultCenter).zoom(12.4).tilt(0).build());
-    map.setOnMapClickListener(point->{setDestination(point,"Punto seleccionado");return true;});
+    map.addOnMapClickListener(point->{setDestination(point,"Punto seleccionado");return true;});
     updateStatus("MAPA LISTO  ·  LA LAGUNA");
     loadLocalAlerts();
     if(destination!=null)placeDestinationMarker();
