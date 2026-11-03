@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.widget.*;
+import android.view.View;
 import android.view.ViewGroup;
 
 public class AudioLabActivity extends Activity {

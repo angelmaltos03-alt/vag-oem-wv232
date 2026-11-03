@@ -67,9 +67,9 @@ public class SoundStudioActivity extends Activity {
   s.append("Salidas de audio detectadas: ").append(audioOutputs());
   report.setText(s.toString());
  }
- private String safeEq(){try{return Equalizer.isAvailable()?"sí":"no";}catch(Throwable t){return "no consultable";}}
- private String safeLoud(){try{return LoudnessEnhancer.isAvailable()?"sí":"no";}catch(Throwable t){return "no consultable";}}
- private String safeDyn(){if(Build.VERSION.SDK_INT<28)return "API no disponible";try{return DynamicsProcessing.isAvailable()?"sí":"no";}catch(Throwable t){return "no consultable";}}
+ private String safeEq(){return Build.VERSION.SDK_INT>=9?"API disponible · requiere sesión de audio":"API no disponible";}
+ private String safeLoud(){return Build.VERSION.SDK_INT>=19?"API disponible · requiere sesión de audio":"API no disponible";}
+ private String safeDyn(){return Build.VERSION.SDK_INT>=28?"API disponible · requiere sesión de audio":"API no disponible";}
  private String codecSummary(){Set<String> found=new TreeSet<>();try{for(MediaCodecInfo c:new MediaCodecList(MediaCodecList.REGULAR_CODECS).getCodecInfos())if(!c.isEncoder())for(String t:c.getSupportedTypes()){String x=t.toLowerCase(Locale.ROOT);if(x.contains("audio/")&&(x.contains("aac")||x.contains("mpeg")||x.contains("flac")||x.contains("opus")||x.contains("vorbis")||x.contains("raw")||x.contains("ac3")||x.contains("eac3")))found.add(x);}}catch(Throwable ignored){}return found.isEmpty()?"sin datos":found.toString();}
  private String audioOutputs(){try{AudioManager am=(AudioManager)getSystemService(AUDIO_SERVICE);if(Build.VERSION.SDK_INT>=23){List<String> out=new ArrayList<>();for(AudioDeviceInfo d:am.getDevices(AudioManager.GET_DEVICES_OUTPUTS))out.add(d.getProductName()+" (tipo "+d.getType()+")");return out.isEmpty()?"no reportadas":out.toString();}return "API anterior";}catch(Throwable t){return "no consultables";}}
 }

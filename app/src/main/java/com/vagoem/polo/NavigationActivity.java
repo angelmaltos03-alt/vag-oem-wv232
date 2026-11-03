@@ -138,7 +138,7 @@ public class NavigationActivity extends Activity {
  @Override protected void onResume(){super.onResume();if(mapView!=null)mapView.onResume();}
  @Override protected void onPause(){if(mapView!=null)mapView.onPause();super.onPause();}
  @Override protected void onStop(){if(mapView!=null)mapView.onStop();super.onStop();}
- @Override protected void onLowMemory(){super.onLowMemory();if(mapView!=null)mapView.onLowMemory();}
+ @Override public void onLowMemory(){super.onLowMemory();if(mapView!=null)mapView.onLowMemory();}
  @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);if(mapView!=null)mapView.onSaveInstanceState(out);}
  @Override protected void onDestroy(){if(mapView!=null)mapView.onDestroy();if(routeEngine!=null)routeEngine.close();super.onDestroy();}
 }
