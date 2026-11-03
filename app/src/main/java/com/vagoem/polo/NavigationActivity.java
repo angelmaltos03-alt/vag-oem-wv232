@@ -29,10 +29,12 @@ public class NavigationActivity extends Activity {
  private static final String STYLE="https://tiles.openfreemap.org/styles/liberty";
  private MapView mapView; private MapLibreMap map; private TextView status; private EditText search;
  private boolean styleReady=false;
+ private LatLng destination;
+ private OfflineRoutingEngine routeEngine;
  private final LatLng defaultCenter=new LatLng(25.5700,-103.4950);
  @Override public void onCreate(Bundle state){
   super.onCreate(state);getWindow().getDecorView().setSystemUiVisibility(5894|1024|512);
-  MapLibre.getInstance(this); build(state);
+  MapLibre.getInstance(this); routeEngine=new OfflineRoutingEngine(this); build(state);
  }
  private TextView text(String value,int size,int color,boolean bold){TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);if(bold)t.setTypeface(null,1);return t;}
  private void build(Bundle state){
@@ -57,6 +59,7 @@ public class NavigationActivity extends Activity {
   Button offline=new Button(this);offline.setText("MAPAS OFFLINE");extra.addView(offline,new LinearLayout.LayoutParams(0,44,1));offline.setOnClickListener(v->startActivity(new android.content.Intent(this,OfflineMapsActivity.class)));
   Button report=new Button(this);report.setText("REPORTAR");extra.addView(report,new LinearLayout.LayoutParams(0,44,1));report.setOnClickListener(v->reportAlert());
   Button alerts=new Button(this);alerts.setText("ALERTAS");extra.addView(alerts,new LinearLayout.LayoutParams(0,44,1));alerts.setOnClickListener(v->showAlerts());
+  Button route=new Button(this);route.setText("TRAZAR RUTA");extra.addView(route,new LinearLayout.LayoutParams(0,44,1));route.setOnClickListener(v->routeToDestination());
   bottom.addView(extra);
   TextView attribution=text("© OpenStreetMap contributors · OpenFreeMap",9,0xFFB8C3D0,false);attribution.setGravity(Gravity.CENTER);bottom.addView(attribution);
   FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-1,-2,Gravity.BOTTOM);bp.setMargins(12,0,12,12);frame.addView(bottom,bp);
@@ -87,7 +90,29 @@ public class NavigationActivity extends Activity {
   String q=search.getText().toString().trim();if(q.isEmpty()){search.setError("Escribe un destino");return;}
   if(!Geocoder.isPresent()){status.setText("Este equipo no tiene servicio de búsqueda de direcciones");return;}
   status.setText("Buscando: "+q+"…");
-  new Thread(()->{try{List<Address> a=new Geocoder(this,Locale.getDefault()).getFromLocationName(q,1);runOnUiThread(()->{if(a==null||a.isEmpty()){status.setText("No encontramos el destino. La búsqueda inicial requiere conexión.");return;}Address x=a.get(0);LatLng p=new LatLng(x.getLatitude(),x.getLongitude());if(map!=null){map.addMarker(new MarkerOptions().position(p).title(q));map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(p,14));}status.setText("Destino localizado · "+q+" · cálculo de ruta pendiente de integrar");});}catch(Exception e){runOnUiThread(()->status.setText("Búsqueda no disponible sin conexión o proveedor de geocodificación."));}},"VAG-Geocoder").start();
+  new Thread(()->{try{List<Address> a=new Geocoder(this,Locale.getDefault()).getFromLocationName(q,1);runOnUiThread(()->{if(a==null||a.isEmpty()){status.setText("No encontramos el destino. La búsqueda inicial requiere conexión.");return;}Address x=a.get(0);LatLng p=new LatLng(x.getLatitude(),x.getLongitude());destination=p;if(map!=null){map.addMarker(new MarkerOptions().position(p).title(q));map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(p,14));}status.setText("Destino localizado · "+q+" · pulsa TRAZAR RUTA");});}catch(Exception e){runOnUiThread(()->status.setText("Búsqueda no disponible sin conexión o proveedor de geocodificación."));}},"VAG-Geocoder").start();
+ }
+ private void routeToDestination(){
+  if(destination==null){status.setText("Primero busca y selecciona un destino.");return;}
+  if(!routeEngine.hasRegionalTiles()){status.setText("Motor Valhalla integrado. Falta instalar el paquete de red vial offline de la región; el mapa no inventará rutas.");return;}
+  if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},REQ_LOCATION);return;}
+  Location origin=null;try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);for(String provider:lm.getProviders(true)){Location l=lm.getLastKnownLocation(provider);if(l!=null&&(origin==null||l.getTime()>origin.getTime()))origin=l;}}catch(SecurityException ignored){}
+  if(origin==null){status.setText("Esperando una posición GPS válida para iniciar la ruta.");return;}
+  final double lat=origin.getLatitude(),lon=origin.getLongitude(),toLat=destination.getLatitude(),toLon=destination.getLongitude();
+  status.setText("Calculando ruta local en el equipo…");
+  new Thread(()->{try{
+   String raw=routeEngine.route(lat,lon,toLat,toLon);JSONObject trip=new JSONObject(raw).getJSONObject("trip");JSONObject leg=trip.getJSONArray("legs").getJSONObject(0);
+   java.util.List<LatLng> points=decodePolyline6(leg.getString("shape"));
+   String instruction="Ruta calculada";if(leg.has("maneuvers")&&leg.getJSONArray("maneuvers").length()>0)instruction=leg.getJSONArray("maneuvers").getJSONObject(0).optString("instruction",instruction);
+   final String nextInstruction=instruction;
+   final String summary=String.format(Locale.US,"Ruta offline lista · %.1f km · %.0f min",trip.getJSONObject("summary").optDouble("length",0),trip.getJSONObject("summary").optDouble("time",0)/60.0);
+   runOnUiThread(()->{if(map!=null&&!points.isEmpty()){map.addPolyline(new PolylineOptions().addAll(points).color(0xFFE31B36).width(6));map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(destination,12));}status.setText(summary+" · "+nextInstruction);});
+  }catch(Exception e){runOnUiThread(()->status.setText("No se pudo calcular ruta offline: "+e.getMessage()));}},"VAG-Valhalla-Route").start();
+ }
+ private java.util.List<LatLng> decodePolyline6(String encoded){
+  java.util.List<LatLng> out=new java.util.ArrayList<>();int index=0,lat=0,lon=0;
+  while(index<encoded.length()){int result=0,shift=0,b;do{b=encoded.charAt(index++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=0x20&&index<encoded.length());lat+=((result&1)!=0?~(result>>1):(result>>1));result=0;shift=0;do{b=encoded.charAt(index++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=0x20&&index<encoded.length());lon+=((result&1)!=0?~(result>>1):(result>>1));out.add(new LatLng(lat/1e6,lon/1e6));}
+  return out;
  }
  private void locate(){
   if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},REQ_LOCATION);return;}
@@ -102,5 +127,5 @@ public class NavigationActivity extends Activity {
  @Override protected void onStop(){if(mapView!=null)mapView.onStop();super.onStop();}
  @Override protected void onLowMemory(){super.onLowMemory();if(mapView!=null)mapView.onLowMemory();}
  @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);if(mapView!=null)mapView.onSaveInstanceState(out);}
- @Override protected void onDestroy(){if(mapView!=null)mapView.onDestroy();super.onDestroy();}
+ @Override protected void onDestroy(){if(mapView!=null)mapView.onDestroy();if(routeEngine!=null)routeEngine.close();super.onDestroy();}
 }
