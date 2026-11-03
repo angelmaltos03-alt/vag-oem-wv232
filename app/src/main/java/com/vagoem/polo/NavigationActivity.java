@@ -236,8 +236,10 @@ public class NavigationActivity extends Activity {
   meta.addView(branding);
   surface.addView(meta);
 
-  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(-1,-2,Gravity.TOP|Gravity.CENTER_HORIZONTAL);
-  lp.setMargins(dp(14),dp(10),dp(14),0);
+  int displayWidth=getResources().getDisplayMetrics().widthPixels;
+  int searchWidth=Math.min(displayWidth-dp(28),Math.round(displayWidth*0.70f));
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(searchWidth,-2,Gravity.TOP|Gravity.LEFT);
+  lp.setMargins(dp(14),dp(10),0,0);
   root.addView(surface,lp);
  }
 
@@ -277,8 +279,10 @@ public class NavigationActivity extends Activity {
   bottomSheet.setElevation(dp(12));
   rebuildBottomSheet();
 
-  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(-1,-2,Gravity.BOTTOM);
-  lp.setMargins(dp(10),0,dp(10),dp(8));
+  int displayWidth=getResources().getDisplayMetrics().widthPixels;
+  int sheetWidth=Math.min(displayWidth-dp(20),Math.round(displayWidth*0.68f));
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(sheetWidth,-2,Gravity.BOTTOM|Gravity.LEFT);
+  lp.setMargins(dp(14),0,0,dp(8));
   root.addView(bottomSheet,lp);
  }
 
