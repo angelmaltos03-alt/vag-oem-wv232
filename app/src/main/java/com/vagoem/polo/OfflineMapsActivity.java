@@ -146,8 +146,9 @@ public class OfflineMapsActivity extends Activity {
     installedList.removeAllViews();
     if(regions==null||regions.length==0){installedList.addView(label("Todavía no hay paquetes descargados.",11,0xFF9BA8B7,false));return;}
     for(OfflineRegion region:regions){
-     String name="Región offline";
-     try{name=new JSONObject(new String(region.getMetadata(),StandardCharsets.UTF_8)).optString("name",name);}catch(Exception ignored){}
+     String parsedName="Región offline";
+     try{parsedName=new JSONObject(new String(region.getMetadata(),StandardCharsets.UTF_8)).optString("name",parsedName);}catch(Exception ignored){}
+     final String name=parsedName;
      LinearLayout row=new LinearLayout(OfflineMapsActivity.this);row.setOrientation(LinearLayout.VERTICAL);
      row.addView(label(name,12,Color.WHITE,true));
      region.getStatus(new OfflineRegion.OfflineRegionStatusCallback(){
