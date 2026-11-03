@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.vagoem.polo'
  compileSdk 36
- defaultConfig { applicationId 'com.vagoem.polo'; minSdk 24; targetSdk 32; versionCode 18; versionName '0.13.3' }
+ defaultConfig { applicationId 'com.vagoem.polo'; minSdk 24; targetSdk 32; versionCode 19; versionName '0.13.4' }
  buildTypes { debug { applicationIdSuffix '.diagnostic'; versionNameSuffix '-diagnostic' } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
 }
