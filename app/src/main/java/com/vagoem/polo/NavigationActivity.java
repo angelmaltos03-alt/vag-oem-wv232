@@ -363,7 +363,7 @@ public class NavigationActivity extends Activity {
   bottomSheet.addView(attribution,attrLp);
  }
 
- private TextView metricBox(String value,String caption){
+ private View metricBox(String value,String caption){
   LinearLayout wrap=new LinearLayout(this);
   wrap.setOrientation(LinearLayout.VERTICAL);
   wrap.setGravity(Gravity.CENTER);
@@ -373,11 +373,7 @@ public class NavigationActivity extends Activity {
   sub.setGravity(Gravity.CENTER);
   wrap.addView(number,new LinearLayout.LayoutParams(-1,dp(27)));
   wrap.addView(sub,new LinearLayout.LayoutParams(-1,dp(14)));
-  FrameLayout f=new FrameLayout(this);
-  f.addView(wrap,new FrameLayout.LayoutParams(-1,-1));
-  TextView proxy=label(value+"\n"+caption,14,WHITE,true);
-  proxy.setGravity(Gravity.CENTER);
-  return proxy;
+  return wrap;
  }
 
  private void updateStatus(String value){
