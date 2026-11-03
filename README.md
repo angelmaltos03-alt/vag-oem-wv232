@@ -2,6 +2,32 @@
 
 Aplicación Android nativa Java, una sola APK, con interfaz estilo OEM Volkswagen. Versión objetivo **0.11.0**.
 
+## Vista previa de la interfaz
+
+Estas imágenes muestran vistas de referencia de las pantallas principales de VAG OEM, preparadas a partir del diseño y los componentes presentes en el código de la versión 0.11.0. **Son previews de interfaz, no capturas de una ejecución en el estéreo ni del emulador.** La validación visual en Android Emulator y en el WV232 físico se documentará por separado cuando sus pruebas terminen.
+
+<p align="center">
+  <strong>VAG Home · Launcher principal</strong><br/>
+  <img src="docs/screenshots/home-preview.svg" alt="Vista previa del launcher VAG Home para Volkswagen Polo 2020" width="900"/>
+</p>
+
+<p align="center">
+  <strong>VAG Vehicle · Tablero de información</strong><br/>
+  <img src="docs/screenshots/vehicle-preview.svg" alt="Vista previa del panel de información del vehículo con métricas CANBUS pendientes de lectura" width="900"/>
+</p>
+
+<p align="center">
+  <strong>VAG Navigation · Mapa y controles</strong><br/>
+  <img src="docs/screenshots/navigation-preview.svg" alt="Vista previa de la pantalla de navegación con búsqueda y controles de mapa" width="900"/>
+</p>
+
+<p align="center">
+  <strong>VAG Sound Studio · Ecualizador de 10 bandas</strong><br/>
+  <img src="docs/screenshots/sound-studio-preview.svg" alt="Vista previa de Sound Studio con perfiles de audio y ecualizador de diez bandas" width="900"/>
+</p>
+
+> Nota: el tablero de vehículo muestra guiones mientras no se haya identificado e integrado un decodificador CANBUS/OBD compatible. La vista de navegación es ilustrativa; la cartografía real depende de la carga del estilo y de los paquetes offline instalados.
+
 ## Módulos
 - VAG Home: launcher OEM horizontal.
 - VAG Navigation: MapLibre Native 13.6.1.
@@ -76,7 +102,7 @@ La silueta roja de tres vistas se basa en la lámina del Polo proporcionada para
 ## Builds
 - APK base automática: `VAG-OEM-WV232-0.11.0-BASE-debug-APK` (sin grafo precargado).
 - APK con grafo regional: `VAG-OEM-WV232-0.11.0-OFFLINE-APK` (flujo de construcción de datos).
-- JDK 17 · Gradle 8.9 · Android Gradle Plugin 8.7.3 · SDK 35.
+- JDK 21 (CI) · Gradle 8.11.1 · Android SDK 36.
 
 ## Validación
 Código y workflows guardados en GitHub. La compilación final del APK con grafo regional y pruebas en hardware WV232 siguen pendientes de confirmación. No se declara éxito de build hasta que Actions lo reporte.
