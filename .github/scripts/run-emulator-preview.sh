@@ -3,6 +3,7 @@ set -euo pipefail
 
 APK="app/build/outputs/apk/debug/app-debug.apk"
 OUT="emulator-preview"
+PKG="com.vagoem.polo.diagnostic"
 
 mkdir -p "$OUT"
 test -s "$APK" || { echo "APK no encontrada o vacía: $APK" >&2; exit 1; }
@@ -13,8 +14,8 @@ adb shell wm density 160
 
 echo "== Instalando APK =="
 adb install -r "$APK"
-adb shell am force-stop com.vagoem.polo
-adb shell am start -n com.vagoem.polo/.MainActivity
+adb shell am force-stop "$PKG"
+adb shell am start -n "$PKG/.MainActivity"
 sleep 7
 
 capture() {
@@ -32,39 +33,39 @@ tap_home() {
 
 echo "== Launcher y accesos principales =="
 capture 00-home
-adb shell input tap 150 200
+adb shell input tap 150 145
 sleep 2
 capture 01-radio
 tap_home
-adb shell input tap 393 200
+adb shell input tap 635 145
 sleep 2
 capture 02-media
 tap_home
-adb shell input tap 635 200
+adb shell input tap 150 248
 sleep 2
 capture 03-phone
 tap_home
-adb shell input tap 878 200
+adb shell input tap 635 248
 sleep 2
 capture 04-app-connect
 
 echo "== Pantallas principales =="
 tap_home
-adb shell input tap 150 376
+adb shell input tap 150 352
 sleep 2
 capture 05-navigation-entry
 tap_home
-adb shell input tap 635 376
+adb shell input tap 150 456
 sleep 2
 capture 06-settings
 tap_home
-adb shell input tap 878 376
+adb shell input tap 635 456
 sleep 2
 capture 07-sound-entry
 
 echo "== Tablero y pestañas del vehículo =="
 tap_home
-adb shell input tap 393 376
+adb shell input tap 635 352
 sleep 2
 capture 08-vehicle-general
 adb shell input tap 390 160
@@ -75,16 +76,16 @@ adb shell input tap 870 160
 capture 11-vehicle-states
 
 echo "== Actividades Android independientes =="
-adb shell am start -n com.vagoem.polo/.SoundStudioActivity
+adb shell am start -n "$PKG/.SoundStudioActivity"
 sleep 5
 capture 12-sound-studio
-adb shell am start -n com.vagoem.polo/.AudioLabActivity
+adb shell am start -n "$PKG/.AudioLabActivity"
 sleep 5
 capture 13-audio-lab
-adb shell am start -n com.vagoem.polo/.OfflineMapsActivity
+adb shell am start -n "$PKG/.OfflineMapsActivity"
 sleep 7
 capture 14-offline-map-manager
-adb shell am start -n com.vagoem.polo/.NavigationActivity
+adb shell am start -n "$PKG/.NavigationActivity"
 sleep 25
 capture 15-navigation-map
 
@@ -100,7 +101,7 @@ capture 16-navigation-destination
 echo "== Guardando diagnóstico =="
 adb logcat -d > "$OUT/logcat.txt"
 adb shell dumpsys activity activities > "$OUT/activities.txt"
-adb shell dumpsys package com.vagoem.polo > "$OUT/package.txt"
+adb shell dumpsys package "$PKG" > "$OUT/package.txt"
 
 cat > "$OUT/index.html" <<'HTML'
 <!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
