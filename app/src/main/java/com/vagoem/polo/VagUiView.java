@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Typeface;
@@ -128,11 +129,13 @@ public class VagUiView extends View {
    if(active){p.setColor(RED);c.drawRoundRect(new RectF(x+18,176,x+210,179),2,2,p);}
   }
   panel(c,35,191,438,329);
-  if(poloSilhouette!=null){
+  if(vehicleTab==3){
+   drawDoorSchematic(c);
+  }else if(poloSilhouette!=null){
    RectF dst=fit(poloSilhouette,52,218,404,247);
    p.setAlpha(255);c.drawBitmap(poloSilhouette,null,dst,p);p.setAlpha(255);
   }
-  txt(c,"VOLKSWAGEN POLO 2020  ·  VISTAS DE REFERENCIA",254,497,8,0xFF8F9BA9,true,Paint.Align.CENTER);
+  txt(c,vehicleTab==3?"MONITOR DE APERTURAS  ·  ESTADO EN ESPERA":"VOLKSWAGEN POLO 2020  ·  VISTAS DE REFERENCIA",254,497,8,0xFF8F9BA9,true,Paint.Align.CENTER);
   panel(c,493,191,496,329);
   String[] labels,units;
   if(vehicleTab==0){
@@ -145,15 +148,34 @@ public class VagUiView extends View {
    labels=new String[]{"VELOCIDAD ACTUAL","RÉGIMEN DEL MOTOR","TEMP. REFRIGERANTE","CARGA DEL MOTOR","POSICIÓN ACELERADOR","VOLTAJE DE BATERÍA"};
    units=new String[]{"km/h","rpm","°C","%","%","V"};
   }else{
-   labels=new String[]{"PUERTA CONDUCTOR","PUERTA COPILOTO","PUERTAS TRASERAS","CAJUELA","FRENO DE MANO","CINTURÓN / LUCES"};
-   units=new String[]{"estado","estado","estado","estado","estado","estado"};
+   labels=new String[]{"PUERTA CONDUCTOR","PUERTA COPILOTO","TRASERA IZQUIERDA","TRASERA DERECHA","COFRE","CAJUELA"};
+   units=new String[]{"SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO","SIN DATO"};
   }
   for(int i=0;i<6;i++){
    int col=i%2,row=i/2;float x=506+col*239,y=201+row*101;
    metric(c,x,y,224,91,labels[i],units[i]);
   }
-  txt(c,"CANBUS SIN CONEXIÓN  ·  LECTURAS PENDIENTES",690,540,8,0xFFE58B96,true,Paint.Align.CENTER);
+  txt(c,vehicleTab==3?"SIN SEÑAL CANBUS  ·  NO SE CONFIRMA NINGUNA APERTURA":"CANBUS SIN CONEXIÓN  ·  LECTURAS PENDIENTES",690,540,8,0xFFE58B96,true,Paint.Align.CENTER);
   txt(c,"APP CANBUS  ›",951,540,8,RED,true,Paint.Align.RIGHT);
+ }
+ private void drawDoorSchematic(Canvas c){
+  // Esquema superior. Gris significa estado desconocido, nunca se presupone cerrado.
+  p.setColor(0xFF263442);c.drawRoundRect(new RectF(108,277,399,405),42,42,p);
+  p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(0xFF8795A4);
+  c.drawRoundRect(new RectF(108,277,399,405),42,42,p);p.setStyle(Paint.Style.FILL);
+  p.setColor(0xFF18232E);c.drawRoundRect(new RectF(158,291,349,391),25,25,p);
+  p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(0xFF657383);
+  c.drawRoundRect(new RectF(158,291,349,391),25,25,p);
+  c.drawLine(253,292,253,390,p);c.drawLine(158,340,349,340,p);p.setStyle(Paint.Style.FILL);
+  p.setColor(0xFF8795A4);
+  c.drawRoundRect(new RectF(120,286,153,396),9,9,p);
+  c.drawRoundRect(new RectF(354,286,387,396),9,9,p);
+  c.drawCircle(133,340,7,p);c.drawCircle(374,340,7,p);
+  txt(c,"FRENTE",253,259,9,MUTED,true,Paint.Align.CENTER);
+  txt(c,"TRASERA",253,429,9,MUTED,true,Paint.Align.CENTER);
+  txt(c,"CONDUCTOR",126,464,8,MUTED,true,Paint.Align.CENTER);
+  txt(c,"COPILOTO",378,464,8,MUTED,true,Paint.Align.CENTER);
+  txt(c,"ESTADO DESCONOCIDO",253,482,8,0xFFE58B96,true,Paint.Align.CENTER);
  }
  private RectF fit(Bitmap b,float x,float y,float w,float h){
   float scale=Math.min(w/b.getWidth(),h/b.getHeight());float dw=b.getWidth()*scale,dh=b.getHeight()*scale;
