@@ -319,35 +319,22 @@ public class NavigationActivity extends Activity {
   surface.addView(meta);
 
   int displayWidth=getResources().getDisplayMetrics().widthPixels;
-  int searchWidth=Math.min(displayWidth-dp(28),Math.round(displayWidth*0.70f));
+  int searchWidth=Math.min(displayWidth-dp(28),Math.round(displayWidth*0.43f));
   FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(searchWidth,-2,Gravity.TOP|Gravity.LEFT);
-  lp.setMargins(dp(14),dp(10),0,0);
+  lp.setMargins(dp(94),dp(10),0,0);
   root.addView(surface,lp);
  }
 
  private void buildMapControls(){
-  LinearLayout controls=new LinearLayout(this);
-  controls.setOrientation(LinearLayout.VERTICAL);
-  controls.setGravity(Gravity.CENTER);
-  controls.setElevation(dp(4));
-
-  TextView locate=floating("GPS",this::locate); locate.setTextSize(10);
-  controls.addView(locate,new LinearLayout.LayoutParams(dp(46),dp(46)));
-  addControlGap(controls,8);
-
-  TextView tilt=floating("3D",this::toggle3d);
-  tilt.setTextSize(11);
-  controls.addView(tilt,new LinearLayout.LayoutParams(dp(46),dp(46)));
-  addControlGap(controls,8);
-
-  TextView layers=floating("CAPAS",this::showLayers); layers.setTextSize(8);
-  controls.addView(layers,new LinearLayout.LayoutParams(dp(46),dp(46)));
-
-  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(46),-2,Gravity.RIGHT|Gravity.TOP);
-  lp.setMargins(0,dp(112),dp(14),0);
-  root.addView(controls,lp);
+  LinearLayout controls=new LinearLayout(this);controls.setOrientation(LinearLayout.VERTICAL);controls.setGravity(Gravity.CENTER);controls.setElevation(dp(4));
+  TextView report=floating("!",this::reportAlert);report.setTextSize(20);controls.addView(report,new LinearLayout.LayoutParams(dp(48),dp(48)));addControlGap(controls,8);
+  TextView layers=floating("▱",this::showLayers);layers.setTextSize(20);controls.addView(layers,new LinearLayout.LayoutParams(dp(48),dp(48)));addControlGap(controls,8);
+  TextView locate=floating("◎",this::locate);locate.setTextSize(22);controls.addView(locate,new LinearLayout.LayoutParams(dp(48),dp(48)));addControlGap(controls,8);
+  TextView tilt=floating("3D",this::toggle3d);tilt.setTextSize(13);controls.addView(tilt,new LinearLayout.LayoutParams(dp(48),dp(48)));addControlGap(controls,8);
+  TextView zoomIn=floating("+",()->zoomMap(1));zoomIn.setTextSize(23);controls.addView(zoomIn,new LinearLayout.LayoutParams(dp(48),dp(43)));
+  TextView zoomOut=floating("−",()->zoomMap(-1));zoomOut.setTextSize(23);controls.addView(zoomOut,new LinearLayout.LayoutParams(dp(48),dp(43)));
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(48),-2,Gravity.RIGHT|Gravity.TOP);lp.setMargins(0,dp(78),dp(14),0);root.addView(controls,lp);
  }
-
  private void addControlGap(LinearLayout parent,int height){
   View gap=new View(this);
   parent.addView(gap,new LinearLayout.LayoutParams(1,dp(height)));
@@ -362,7 +349,7 @@ public class NavigationActivity extends Activity {
   rebuildBottomSheet();
 
   int displayWidth=getResources().getDisplayMetrics().widthPixels;
-  int sheetWidth=Math.min(displayWidth-dp(20),Math.round(displayWidth*0.68f));
+  int sheetWidth=Math.min(displayWidth-dp(20),Math.round(displayWidth*0.56f));
   FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(sheetWidth,-2,Gravity.BOTTOM|Gravity.LEFT);
   lp.setMargins(dp(14),0,0,dp(8));
   root.addView(bottomSheet,lp);
