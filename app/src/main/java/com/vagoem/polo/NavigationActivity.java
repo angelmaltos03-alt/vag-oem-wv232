@@ -191,6 +191,76 @@ public class NavigationActivity extends Activity {
   });
  }
 
+ private void buildTopBar(){
+  LinearLayout bar=new LinearLayout(this);bar.setOrientation(LinearLayout.HORIZONTAL);bar.setGravity(Gravity.CENTER_VERTICAL);
+  bar.setPadding(dp(18),0,dp(18),0);bar.setBackgroundColor(0xF2090E16);bar.setElevation(dp(12));
+  TextView vw=label("VW",20,WHITE,true);vw.setGravity(Gravity.CENTER);vw.setBackground(rounded(0xFF101925,0xFFB7C1CC,24));
+  bar.addView(vw,new LinearLayout.LayoutParams(dp(42),dp(42)));
+  TextView brand=label("VAG OEM",15,WHITE,true);LinearLayout.LayoutParams bp=new LinearLayout.LayoutParams(-2,-1);bp.leftMargin=dp(12);bar.addView(brand,bp);
+  bar.addView(label("WV232",15,RED,true));
+  View divider=new View(this);divider.setBackgroundColor(STROKE);LinearLayout.LayoutParams dl=new LinearLayout.LayoutParams(dp(1),dp(34));dl.leftMargin=dp(20);dl.rightMargin=dp(20);bar.addView(divider,dl);
+  bar.addView(label("NAVEGACIÓN",14,WHITE,true),new LinearLayout.LayoutParams(0,-1,1));
+  TextView clock=label(new java.text.SimpleDateFormat("HH:mm",Locale.getDefault()).format(new java.util.Date()),21,WHITE,true);clock.setGravity(Gravity.CENTER);bar.addView(clock);
+  TextView net=label("GPS  ·  BT  ·  Wi-Fi",9,0xFFD5DCE5,true);net.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams nl=new LinearLayout.LayoutParams(-2,-1);nl.leftMargin=dp(24);bar.addView(net,nl);
+  root.addView(bar,new FrameLayout.LayoutParams(-1,dp(62),Gravity.TOP));
+ }
+
+ private void buildLeftRail(){
+  LinearLayout rail=new LinearLayout(this);rail.setOrientation(LinearLayout.VERTICAL);rail.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);rail.setPadding(0,dp(12),0,dp(8));rail.setBackgroundColor(0xF20A1018);rail.setElevation(dp(9));
+  addRailItem(rail,"⌂","INICIO",false,()->finish());
+  addRailItem(rail,"◉","RADIO",false,()->openExternal(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN,Intent.CATEGORY_APP_MUSIC)));
+  addRailItem(rail,"♫","MEDIA",false,()->openExternal(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN,Intent.CATEGORY_APP_MUSIC)));
+  addRailItem(rail,"☎","TELÉFONO",false,()->openExternal(new Intent(Intent.ACTION_DIAL)));
+  addRailItem(rail,"➤","NAVEGACIÓN",true,null);
+  addRailItem(rail,"▣","VEHÍCULO",false,()->finish());
+  addRailItem(rail,"☷","AJUSTES",false,()->startActivity(new Intent(this,MainActivity.class)));
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(78),-1,Gravity.LEFT);lp.topMargin=dp(62);root.addView(rail,lp);
+ }
+
+ private void addRailItem(LinearLayout rail,String glyph,String caption,boolean selected,Runnable action){
+  LinearLayout item=new LinearLayout(this);item.setOrientation(LinearLayout.VERTICAL);item.setGravity(Gravity.CENTER);item.setPadding(dp(3),dp(7),dp(3),dp(7));
+  if(selected)item.setBackground(rounded(0xAA641628,RED,0));
+  TextView icon=label(glyph,23,selected?WHITE:0xFFB8C2CF,true);icon.setGravity(Gravity.CENTER);item.addView(icon,new LinearLayout.LayoutParams(-1,dp(31)));
+  TextView name=label(caption,7,selected?WHITE:0xFF9BA8B7,true);name.setGravity(Gravity.CENTER);item.addView(name,new LinearLayout.LayoutParams(-1,dp(17)));
+  if(action!=null){item.setClickable(true);item.setOnClickListener(v->action.run());}
+  LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(63));lp.bottomMargin=dp(2);rail.addView(item,lp);
+ }
+
+ private void openExternal(Intent intent){try{startActivity(intent);}catch(Exception e){updateStatus("APLICACIÓN NO DISPONIBLE");}}
+
+ private void buildManeuverBanner(){
+  LinearLayout card=new LinearLayout(this);card.setOrientation(LinearLayout.HORIZONTAL);card.setGravity(Gravity.CENTER_VERTICAL);card.setPadding(dp(12),dp(9),dp(14),dp(9));card.setBackground(rounded(0xF20D131D,0xFF596574,13));card.setElevation(dp(10));
+  TextView arrow=label("↱",34,WHITE,true);arrow.setGravity(Gravity.CENTER);arrow.setBackground(rounded(0xFFB90035,0xFFFF315C,10));card.addView(arrow,new LinearLayout.LayoutParams(dp(58),dp(58)));
+  LinearLayout info=new LinearLayout(this);info.setOrientation(LinearLayout.VERTICAL);info.setPadding(dp(13),0,0,0);
+  maneuverDistance=label("—",25,WHITE,true);maneuverTitle=label("SELECCIONA UN DESTINO",11,0xFFE2E7EE,true);info.addView(maneuverDistance);info.addView(maneuverTitle);
+  card.addView(info,new LinearLayout.LayoutParams(0,-2,1));card.addView(label("///",17,RED,true));
+  int width=Math.min(dp(410),getResources().getDisplayMetrics().widthPixels-dp(112));FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(width,dp(82),Gravity.TOP|Gravity.LEFT);lp.setMargins(dp(94),dp(78),0,0);root.addView(card,lp);
+ }
+
+ private void updateManeuverBanner(){
+  if(maneuverTitle==null)return;
+  if(routeSummary.isEmpty()){maneuverDistance.setText("—");maneuverTitle.setText(destination==null?"SELECCIONA UN DESTINO":destinationLabel.toUpperCase(Locale.getDefault()));}
+  else{maneuverDistance.setText("RUTA LISTA");maneuverTitle.setText(nextInstruction.isEmpty()?"RUTA CALCULADA":nextInstruction.toUpperCase(Locale.getDefault()));}
+ }
+
+ private void buildSpeedCard(){
+  LinearLayout card=new LinearLayout(this);card.setOrientation(LinearLayout.HORIZONTAL);card.setGravity(Gravity.CENTER_VERTICAL);card.setPadding(dp(13),dp(8),dp(15),dp(8));card.setBackground(rounded(0xF20B111A,0xFF4B5665,14));card.setElevation(dp(9));
+  TextView limit=label("—",20,WHITE,true);limit.setGravity(Gravity.CENTER);limit.setBackground(rounded(0xFFF1F4F7,RED,28));limit.setTextColor(0xFF101722);card.addView(limit,new LinearLayout.LayoutParams(dp(48),dp(48)));
+  LinearLayout speed=new LinearLayout(this);speed.setOrientation(LinearLayout.VERTICAL);speed.setPadding(dp(12),0,0,0);speedValue=label("—",25,WHITE,true);speed.addView(speedValue);speed.addView(label("km/h · GPS",8,MUTED,true));card.addView(speed);
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(-2,dp(68),Gravity.RIGHT|Gravity.BOTTOM);lp.setMargins(0,0,dp(16),dp(18));root.addView(card,lp);
+ }
+
+ private void add3dBuildings(Style style){
+  try{
+   String sourceId=style.getSource("openmaptiles")!=null?"openmaptiles":(style.getSource("openfreemap")!=null?"openfreemap":null);
+   if(sourceId==null){updateStatus("MAPA OSCURO LISTO · FUENTE 3D NO DISPONIBLE");return;}
+   if(style.getLayer("vag-buildings-3d")!=null)return;
+   FillExtrusionLayer buildings=new FillExtrusionLayer("vag-buildings-3d",sourceId);buildings.setSourceLayer("building");buildings.setMinZoom(14f);
+   buildings.setFilter(Expression.all(Expression.has("render_height"),Expression.has("render_min_height")));
+   buildings.setProperties(PropertyFactory.fillExtrusionColor("#26364B"),PropertyFactory.fillExtrusionHeight(Expression.get("render_height")),PropertyFactory.fillExtrusionBase(Expression.get("render_min_height")),PropertyFactory.fillExtrusionOpacity(0.92f),PropertyFactory.fillExtrusionVerticalGradient(true));
+   style.addLayer(buildings);updateStatus("MAPA 3D · EDIFICIOS VECTORIALES");
+  }catch(Exception e){updateStatus("MAPA OSCURO LISTO · 3D NO DISPONIBLE");}
+ }
  private void buildSearchSurface(){
   LinearLayout surface=new LinearLayout(this);
   surface.setOrientation(LinearLayout.VERTICAL);
