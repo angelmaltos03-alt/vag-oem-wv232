@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
@@ -69,6 +70,8 @@ public class NavigationActivity extends Activity {
  private TextView maneuverTitle, maneuverDistance, speedValue;
  private boolean perspective3d=true;
  private int routeMinutes=0;
+ private LocationListener gpsListener;
+ private boolean followGps=true;
  private EditText search;
  private boolean styleReady=false;
  private boolean pendingRoute=false;
@@ -475,6 +478,7 @@ public class NavigationActivity extends Activity {
  }
 
  private void setDestination(LatLng point,String title){
+  followGps=false;
   destination=point;
   destinationLabel=title==null||title.trim().isEmpty()?"Destino":title;
   routeSummary="";
@@ -620,21 +624,29 @@ public class NavigationActivity extends Activity {
 
  private void locate(){
   Location loc=latestLocation();
-  if(loc==null){
-   requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},REQ_LOCATION);
-   updateStatus("PERMISO GPS PENDIENTE");
-   return;
-  }
-  currentLocation=new LatLng(loc.getLatitude(),loc.getLongitude());
-  if(map!=null){
-   if(locationMarker!=null)map.removeMarker(locationMarker);
-   locationMarker=map.addMarker(new MarkerOptions().position(currentLocation).title("Mi ubicación"));
-   map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(currentLocation).zoom(16.2).tilt(perspective3d?58:0).build()),600);
-  }
-  updateStatus("GPS  ·  UBICACIÓN DEL EQUIPO");
+  if(loc==null){requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},REQ_LOCATION);updateStatus("PERMISO GPS PENDIENTE");return;}
+  followGps=true;updateVehiclePosition(loc);
+  if(map!=null)map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(currentLocation).zoom(16.2).tilt(perspective3d?58:0).build()),600);
+  updateStatus("GPS · SEGUIMIENTO ACTIVADO");
+ }
+
+ private void updateVehiclePosition(Location loc){
+  if(loc==null)return;currentLocation=new LatLng(loc.getLatitude(),loc.getLongitude());
+  if(map!=null){if(locationMarker!=null)map.removeMarker(locationMarker);locationMarker=map.addMarker(new MarkerOptions().position(currentLocation).title("Vehículo · GPS"));
+   if(followGps)map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(map.getCameraPosition()).target(currentLocation).zoom(Math.max(15.2,map.getCameraPosition().zoom)).tilt(perspective3d?58:0).build()));}
   if(speedValue!=null)speedValue.setText(loc.hasSpeed()?String.valueOf(Math.round(loc.getSpeed()*3.6f)):"—");
  }
 
+ private void startGpsTracking(){
+  if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED)return;
+  try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+   if(gpsListener==null)gpsListener=new LocationListener(){@Override public void onLocationChanged(Location location){updateVehiclePosition(location);}};
+   if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER))lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000L,2f,gpsListener);
+   if(lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000L,8f,gpsListener);
+  }catch(Exception e){updateStatus("GPS NO DISPONIBLE · "+safeMessage(e));}
+ }
+
+ private void stopGpsTracking(){try{LocationManager lm=(LocationManager)getSystemService(LOCATION_SERVICE);if(gpsListener!=null)lm.removeUpdates(gpsListener);}catch(Exception ignored){}}
  private void reportAlert(){
   Location loc=latestLocation();
   if(loc==null){
@@ -716,6 +728,7 @@ public class NavigationActivity extends Activity {
   boolean granted=false;
   for(int value:grants)if(value==PackageManager.PERMISSION_GRANTED)granted=true;
   if(requestCode==REQ_LOCATION&&granted){
+   startGpsTracking();
    if(pendingRoute){
     Location loc=latestLocation();
     if(loc!=null)calculateRoute(loc);else updateStatus("GPS AÚN NO DISPONIBLE · INTENTA DE NUEVO");
@@ -727,8 +740,8 @@ public class NavigationActivity extends Activity {
  }
 
  @Override protected void onStart(){super.onStart();if(mapView!=null)mapView.onStart();}
- @Override protected void onResume(){super.onResume();if(mapView!=null)mapView.onResume();}
- @Override protected void onPause(){if(mapView!=null)mapView.onPause();super.onPause();}
+ @Override protected void onResume(){super.onResume();if(mapView!=null)mapView.onResume();startGpsTracking();}
+ @Override protected void onPause(){stopGpsTracking();if(mapView!=null)mapView.onPause();super.onPause();}
  @Override protected void onStop(){if(mapView!=null)mapView.onStop();super.onStop();}
  @Override public void onLowMemory(){super.onLowMemory();if(mapView!=null)mapView.onLowMemory();}
  @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);if(mapView!=null)mapView.onSaveInstanceState(out);}
