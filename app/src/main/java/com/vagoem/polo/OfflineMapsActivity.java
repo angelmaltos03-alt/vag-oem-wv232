@@ -102,7 +102,7 @@ public class OfflineMapsActivity extends Activity {
        long count=s.getCompletedTileCount();long bytes=s.getCompletedResourceSize();long required=s.getRequiredResourceCount();
        int pct=required>0?(int)Math.min(100,100*s.getCompletedResourceCount()/required):0;
        runOnUiThread(()->{progress.setProgress(pct);status.setText(String.format(Locale.US,"%s · %d teselas · %.1f MB · %d%%",p.name,count,bytes/1048576.0,pct));});
-       if(!s.isComplete()&&(count>=TILE_LIMIT||bytes>=BYTE_LIMIT)){region.setDownloadState(OfflineRegion.STATE_INACTIVE);downloading=false;runOnUiThread(()->status.setText(count>=TILE_LIMIT?"Límite de 3,000 teselas alcanzado. Región pausada.":"Límite de 50 MB alcanzado. Región pausada."));}
+       if(count>TILE_LIMIT||bytes>BYTE_LIMIT||(!s.isComplete()&&(count>=TILE_LIMIT||bytes>=BYTE_LIMIT))){downloading=false;region.delete(new OfflineRegion.OfflineRegionDeleteCallback(){public void onDelete(){runOnUiThread(()->{status.setText("Se eliminó la descarga porque alcanzó el límite permitido por el proveedor.");listRegions();refreshStorage();});}public void onError(String error){runOnUiThread(()->status.setText("Límite alcanzado; no se pudo limpiar el paquete: "+error));}});}
        else if(s.isComplete()){region.setDownloadState(OfflineRegion.STATE_INACTIVE);downloading=false;runOnUiThread(()->{status.setText("Región descargada y guardada para uso offline: "+p.name);listRegions();refreshStorage();});}
       }
       @Override public void onError(OfflineRegionError e){downloading=false;runOnUiThread(()->status.setText("Error de descarga: "+e.toString()));}
