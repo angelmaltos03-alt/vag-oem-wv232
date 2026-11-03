@@ -212,7 +212,7 @@ public class MainActivity extends Activity {
   String[] labels=new String[apps.size()];
   for(int n=0;n<apps.size();n++){
    ResolveInfo item=apps.get(n);
-   labels[n]=String.valueOf(item.loadLabel(getPackageManager()))+"\\n"+item.activityInfo.packageName;
+   labels[n]=String.valueOf(item.loadLabel(getPackageManager()))+"\n"+item.activityInfo.packageName;
   }
   new AlertDialog.Builder(this).setTitle(title).setItems(labels,(dialog,which)->{
    String pkg=apps.get(which).activityInfo.packageName;
