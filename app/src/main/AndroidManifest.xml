@@ -11,6 +11,7 @@
   <activity android:name=".AudioLabActivity" android:exported="false" android:screenOrientation="landscape"/>
   <activity android:name=".SoundStudioActivity" android:exported="false" android:screenOrientation="landscape"/>
   <activity android:name=".NavigationActivity" android:exported="false" android:screenOrientation="landscape"/>
+  <activity android:name=".OfflineMapsActivity" android:exported="false" android:screenOrientation="landscape"/>
   <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden" android:exported="true" android:screenOrientation="landscape">
    <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
    <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.HOME"/><category android:name="android.intent.category.DEFAULT"/></intent-filter>
