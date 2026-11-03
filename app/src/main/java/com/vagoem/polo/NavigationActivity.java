@@ -89,8 +89,7 @@ public class NavigationActivity extends Activity {
   }).setNegativeButton("Cancelar",null).show();
  }
  private void showAlerts(){java.util.List<LocalAlertStore.Alert> items=LocalAlertStore.all(this);if(items.isEmpty()){new AlertDialog.Builder(this).setTitle("Alertas guardadas").setMessage("Todavía no hay alertas locales. Puedes reportar un peligro desde tu ubicación GPS.").setPositiveButton("OK",null).show();return;}
-  String[] lines=new String[items.size()];for(int i=0;i<items.size();i++){LocalAlertStore.Alert a=items.get(i);lines[i]=a.type+" · "+String.format(Locale.US,"%.5f, %.5f",a.lat,a.lon)+(a.note.isEmpty()?"":"
-"+a.note);}
+  String[] lines=new String[items.size()];for(int i=0;i<items.size();i++){LocalAlertStore.Alert a=items.get(i);lines[i]=a.type+" · "+String.format(Locale.US,"%.5f, %.5f",a.lat,a.lon)+(a.note.isEmpty()?"":"\n"+a.note);}
   new AlertDialog.Builder(this).setTitle("Alertas guardadas en este equipo").setItems(lines,(d,w)->{LocalAlertStore.Alert a=items.get(w);if(map!=null)map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(new LatLng(a.lat,a.lon),16));}).setPositiveButton("Cerrar",null).show();
  }
  private void searchDestination(){
