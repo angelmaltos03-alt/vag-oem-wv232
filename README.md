@@ -1,63 +1,45 @@
 # Volkswagen Polo 2020 · WV232
 
-**Launcher Android de estilo OEM inspirado en Volkswagen Discover Media / MIB2**, desarrollado para una unidad multimedia Android WV232. Interfaz horizontal, tema grafito y acentos rojo Volkswagen.
+Launcher Android de estilo OEM inspirado en Volkswagen Discover Media / MIB2.
 
-![GitHub Actions](https://github.com/angelmaltos03-alt/vag-oem-wv232/actions/workflows/build-apk.yml/badge.svg)
+## Versión 0.4.0 — Audio Lab y almacenamiento
 
-## Vista previa de la interfaz
+### Audio Lab
+- Prueba de entrada mediante AudioRecord con fuente MIC predeterminada de Android.
+- Medidor de nivel RMS aproximado y pico.
+- Detección de disponibilidad de AGC, AEC y NoiseSuppressor para sesiones compatibles.
+- La captura es temporal: no se guarda ni transmite audio.
+- Detiene la captura al salir.
+- Solicita permiso de micrófono en tiempo de ejecución.
 
-<p align="center">
-  <img src="docs/vag-oem-wv232-preview.svg" alt="Vista previa de la interfaz Bienvenido para Volkswagen Polo 2020" width="100%">
-</p>
+**Limitación:** no puede elegir ni identificar con certeza la cápsula interna o externa si la MCU presenta ambas como una sola entrada. Tampoco cambia la ganancia de llamadas Bluetooth o CPLink. Las llamadas pueden usar una ruta gestionada por MCU/sistema y distinta de AudioRecord. La disponibilidad de efectos Android no demuestra que se apliquen a llamadas.
 
-<p align="center"><em>Preview visual del launcher: menú OEM, ocho accesos principales y acentos rojos.</em></p>
+### Almacenamiento
+- Muestra espacio disponible en el volumen privado de la aplicación.
+- Política: no descargar paquetes de mapas con menos de 2 GB libres.
+- No se incluyen mapas ni dependencias de navegación en el APK 0.4.0.
 
-## Funciones
+### Conservación del hardware original
+- CPLink no se modifica ni sustituye.
+- No se modifica firmware, MCU, Factory Settings ni parámetros CANBUS.
+- La cámara conserva la conmutación original.
+- CANBUS permanece como integración de solo lectura pendiente de identificar.
 
-- **Inicio OEM:** emblema VW, POLO 2020, bienvenida, hora, fecha e indicadores de conectividad.
-- **Radio y Media:** accesos a las aplicaciones originales de la unidad.
-- **Teléfono:** acceso a la aplicación Bluetooth del estéreo.
-- **App-Connect:** conserva CPLink como receptor de Apple CarPlay. El launcher intenta localizarlo por nombre/paquete; si no lo identifica, permite vincular la aplicación instalada y guardar la selección.
-- **Navegación:** acceso a Organic Maps (`app.organicmaps`) o a otra aplicación de mapas elegida.
-- **Vehículo y datos de viaje:** pantallas preparadas para mostrar información real del decodificador CANBUS. No se inventan estados ni mediciones.
-- **Cámara de reversa:** respeta la conmutación automática original del estéreo; la APK no intercepta la entrada RCA ni la señal de reversa.
-- **Ajustes:** vinculación de las aplicaciones originales y acceso a la configuración Android.
+## Instalación y prueba
+1. Instala el APK debug desde el artefacto de GitHub Actions.
+2. Abre Sonido desde el menú VAG OEM.
+3. Concede permiso de micrófono para ejecutar la prueba.
+4. Habla a volumen normal y observa nivel RMS/pico.
+5. Para comparar micrófonos por separado, el equipo debe permitir seleccionar físicamente cada entrada; la app no fuerza esa selección.
+6. Prueba llamadas Bluetooth y CPLink por separado. Audio Lab no debe grabar durante las llamadas.
 
-## Compilar el APK en GitHub
+## Compilar APK
+Abre Actions, selecciona Build VAG OEM WV232 APK y ejecuta Run workflow. Descarga el artefacto VAG-OEM-WV232-0.4.0-debug-APK.
 
-El repositorio incluye un workflow de GitHub Actions que compila la versión de depuración.
+Herramientas: JDK 17, Gradle 8.9, Android Gradle Plugin 8.7.3, SDK 35. minSdk 23, targetSdk 32.
 
-1. Abre la pestaña **Actions**.
-2. Selecciona **Build VAG OEM WV232 APK**.
-3. Pulsa **Run workflow** para iniciar una compilación manual (también se ejecuta al actualizar `main`).
-4. Cuando termine correctamente, abre la ejecución y descarga el artefacto **VAG-OEM-WV232-0.3.1-debug-APK**.
-
-El archivo dentro del ZIP del artefacto se llama `app-debug.apk`.
-
-### Herramientas de compilación
-
-- JDK 17
-- Gradle 8.9
-- Android Gradle Plugin 8.7.3
-- Android SDK Platform 35
-- `minSdk 23` · `targetSdk 32`
-
-## Estado y compatibilidad
-
-- Proyecto en desarrollo y pruebas; no es firmware ni sustituye el sistema original de la unidad.
-- La primera compilación debug se ha generado mediante GitHub Actions; debe instalarse y probarse en la unidad WV232 real.
-- El chipset, ABI, API real de Android, resolución física y densidad de pantalla de cada variante WV232 deben verificarse en el dispositivo.
-- La integración directa de datos CANBUS está pendiente de identificar la aplicación/servicio del decodificador y su interfaz de lectura.
-- CPLink debe estar instalado en el estéreo para que App-Connect pueda abrirlo.
-- El APK actual es de depuración; una versión de producción requerirá configurar una clave de firma estable.
-
-## Estructura del proyecto
-
-- `app/`: aplicación Android nativa (Java), pantallas y recursos.
-- `docs/vag-oem-wv232-preview.svg`: imagen de preview mostrada arriba.
-- `preview/`: prototipo visual navegable.
-- `.github/workflows/build-apk.yml`: compilación automática del APK.
-
-## Seguridad
-
-No se modifican firmware, MCU, Factory Settings ni parámetros del vehículo. La integración CANBUS se plantea como lectura únicamente hasta confirmar el protocolo y la documentación del decodificador.
+## Estado
+- Código Audio Lab incorporado; compilación y validación en hardware pendientes.
+- No es firmware ni reemplaza aplicaciones originales.
+- Chipset, ABI, resolución y densidad de cada variante WV232 deben verificarse.
+- Integración directa CANBUS y navegación nativa offline siguen pendientes.
