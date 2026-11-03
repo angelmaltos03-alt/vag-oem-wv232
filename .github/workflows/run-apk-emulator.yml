@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/run-apk-emulator.yml'
+      - '.github/scripts/**'
       - 'app/**'
       - 'build.gradle'
       - 'settings.gradle'
